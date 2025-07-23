@@ -53,11 +53,36 @@ async function loadLatentData() {
         
         // Mapear los datos brutos a un formato más fácil de usar para el gráfico
         plotData = latentData.latent_coords.map((coord, index) => ({
-            x: coord[0], // Primera dimensión latente
-            y: coord[1], // Segunda dimensión latente
-            label: latentData.labels[index] // Etiqueta (letra) correspondiente
+            x: coord[0],
+            y: coord[1],
+            label: latentData.labels[index]
         }));
         console.log('Datos del espacio latente cargados exitosamente.');
+        
+        // --- Calcular los rangos reales y ajustar los sliders ---
+        const xCoords = plotData.map(p => p.x);
+        const yCoords = plotData.map(p => p.y);
+        const xMin = Math.min(...xCoords);
+        const xMax = Math.max(...xCoords);
+        const yMin = Math.min(...yCoords);
+        const yMax = Math.max(...yCoords);
+        
+        // Ajustar los sliders al rango real de los datos latentes
+        // Añadimos un pequeño margen extra para que no estén justo en el borde
+        const sliderPadding = 5; 
+        latentDim1Slider.min = (xMin - sliderPadding).toFixed(2);
+        latentDim1Slider.max = (xMax + sliderPadding).toFixed(2);
+        latentDim2Slider.min = (yMin - sliderPadding).toFixed(2);
+        latentDim2Slider.max = (yMax + sliderPadding).toFixed(2);
+        
+        // Reiniciar los valores de los sliders al centro del nuevo rango
+        latentDim1Slider.value = (xMin + xMax) / 2; // O o (xMin + xMax) / 2 para el centro real
+        latentDim2Slider.value = (yMin + yMax) / 2; // O o (yMin + yMax) / 2 para el centro real
+        latentDim1ValueSpan.textContent = '0.00';
+        latentDim2ValueSpan.textContent = '0.00';
+        currentLatentXSpan.textContent = '0.00';
+        currentLatentYSpan.textContent = '0.00';
+        
         drawLatentSpace(); // Dibujar el espacio latente una vez cargados los datos
     } catch (error) {
         console.error('Error al cargar los datos latentes:', error);
@@ -78,6 +103,7 @@ function drawLatentSpace() {
     const width = plotCanvas.width;
     const height = plotCanvas.height;
     plotCtx.clearRect(0, 0, width, height); // Limpiar el canvas antes de redibujar
+    drawGridAndAxes(width, height, xMin, xMax, yMin, yMax);
 
     // Calcular los rangos de los datos latentes para la normalización (escalado)
     const xCoords = plotData.map(p => p.x);
@@ -114,6 +140,100 @@ function drawLatentSpace() {
         plotCtx.textBaseline = 'bottom'; // Alinea el texto a la parte inferior
         plotCtx.fillText(point.label, xPixel, yPixel - plotPointSize - 2); // Posicionar encima del punto
     });
+}
+
+/**
+ * Dibuja una grilla y ejes en el canvas del espacio latente.
+ * @param {number} width - Ancho del canvas.
+ * @param {number} height - Alto del canvas.
+ * @param {number} xMin - Valor mínimo de la dimensión X latente.
+ * @param {number} xMax - Valor máximo de la dimensión X latente.
+ * @param {number} yMin - Valor mínimo de la dimensión Y latente.
+ * @param {number} yMax - Valor máximo de la dimensión Y latente.
+ */
+function drawGridAndAxes(width, height, xMin, xMax, yMin, yMax) {
+    plotCtx.strokeStyle = '#e0e0e0'; // Color de la grilla (gris claro)
+    plotCtx.lineWidth = 0.5;
+
+    const numGridLines = 10; // Número aproximado de líneas de grilla
+
+    // Calcular los factores de escala (ya los tienes en drawLatentSpace, pero aquí los calculamos de nuevo por claridad)
+    const xScale = (width - 2 * plotMargin) / (xMax - xMin);
+    const yScale = (height - 2 * plotMargin) / (yMax - yMin);
+
+    // --- Dibujar Grilla ---
+    // Líneas verticales (eje X)
+    for (let i = 0; i <= numGridLines; i++) {
+        const xVal = xMin + (i / numGridLines) * (xMax - xMin);
+        const xPixel = plotMargin + (xVal - xMin) * xScale;
+        plotCtx.beginPath();
+        plotCtx.moveTo(xPixel, plotMargin);
+        plotCtx.lineTo(xPixel, height - plotMargin);
+        plotCtx.stroke();
+    }
+
+    // Líneas horizontales (eje Y)
+    for (let i = 0; i <= numGridLines; i++) {
+        const yVal = yMin + (i / numGridLines) * (yMax - yMin);
+        // Recordar invertir Y para píxeles
+        const yPixel = height - plotMargin - (yVal - yMin) * yScale;
+        plotCtx.beginPath();
+        plotCtx.moveTo(plotMargin, yPixel);
+        plotCtx.lineTo(width - plotMargin, yPixel);
+        plotCtx.stroke();
+    }
+
+    // --- Dibujar Ejes (más oscuros y gruesos) ---
+    plotCtx.strokeStyle = '#666'; // Color de los ejes (gris más oscuro)
+    plotCtx.lineWidth = 1;
+
+    // Eje X (horizontal)
+    plotCtx.beginPath();
+    plotCtx.moveTo(plotMargin, height - plotMargin);
+    plotCtx.lineTo(width - plotMargin, height - plotMargin);
+    plotCtx.stroke();
+
+    // Eje Y (vertical)
+    plotCtx.beginPath();
+    plotCtx.moveTo(plotMargin, plotMargin);
+    plotCtx.lineTo(plotMargin, height - plotMargin);
+    plotCtx.stroke();
+
+    // --- Etiquetas de los Ejes (Valores) ---
+    plotCtx.fillStyle = '#333';
+    plotCtx.font = '10px Arial';
+    plotCtx.textAlign = 'center';
+    plotCtx.textBaseline = 'top';
+
+    // Etiquetas Eje X
+    const xStep = (xMax - xMin) / 5; // Aproximadamente 5 etiquetas en X
+    for (let i = 0; i <= 5; i++) {
+        const val = xMin + i * xStep;
+        const xPixel = plotMargin + (val - xMin) * xScale;
+        plotCtx.fillText(val.toFixed(1), xPixel, height - plotMargin + 5);
+    }
+
+    plotCtx.textAlign = 'right';
+    plotCtx.textBaseline = 'middle';
+    // Etiquetas Eje Y
+    const yStep = (yMax - yMin) / 5; // Aproximadamente 5 etiquetas en Y
+    for (let i = 0; i <= 5; i++) {
+        const val = yMin + i * yStep;
+        const yPixel = height - plotMargin - (val - yMin) * yScale;
+        plotCtx.fillText(val.toFixed(1), plotMargin - 5, yPixel);
+    }
+
+    // Títulos de los ejes
+    plotCtx.textAlign = 'center';
+    plotCtx.textBaseline = 'top';
+    plotCtx.font = '12px Arial';
+    plotCtx.fillText('Dimensión Latente 1', width / 2, height - plotMargin + 25);
+
+    plotCtx.save(); // Guarda el estado actual del contexto
+    plotCtx.translate(plotMargin - 25, height / 2); // Mueve el origen para rotar
+    plotCtx.rotate(-Math.PI / 2); // Rota 90 grados a la izquierda
+    plotCtx.fillText('Dimensión Latente 2', 0, 0);
+    plotCtx.restore(); // Restaura el estado original del contexto
 }
 
 /**
