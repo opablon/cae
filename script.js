@@ -27,7 +27,7 @@ const inputLatentY = document.getElementById('inputLatentY'); // Input editable 
 const imageSize = 64; // El tamaño de las imágenes de tus caracteres (64x64 píxeles)
 let plotData = []; // Array que contendrá los datos de las coordenadas latentes y sus etiquetas para el gráfico
 const plotPointSize = 5; // Tamaño de los puntos en el gráfico
-const plotMargin = 70;   // Margen alrededor del gráfico para asegurar que los puntos no queden en el borde (AUMENTADO OTRA VEZ)
+const plotMargin = 70;   // Margen alrededor del gráfico para asegurar que los puntos no queden en el borde
 
 // --- Funciones de Carga (Asíncronas) ---
 
@@ -206,7 +206,7 @@ function drawLatentSpace() {
 
     // Obtener el tamaño actual del canvas tal como lo está renderizando el CSS
     const visualWidth = plotCanvas.clientWidth;
-    const visualHeight = plotCanvas.clientHeight;
+    const visualHeight = visualWidth;
 
     // Establecer las propiedades de width y height del canvas para que coincidan con su tamaño visual
     // Esto es crucial para que el contexto de dibujo interno se ajuste correctamente
