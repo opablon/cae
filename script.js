@@ -200,21 +200,29 @@ function drawGridAndAxes(width, height, xMin, xMax, yMin, yMax) {
  * Dibuja los puntos de referencia del espacio latente en el canvas del gráfico.
  */
 function drawLatentSpace() {
-    if (!plotData || !plotCanvas || xMinGlobal === undefined) { // Añadir comprobación para rangos globales
+    if (!plotData || !plotCanvas || xMinGlobal === undefined) {
         return;
     }
 
-    const width = plotCanvas.width;
-    const height = plotCanvas.height;
-    plotCtx.clearRect(0, 0, width, height); // Limpiar el canvas antes de redibujar
+    // Obtener el tamaño actual del canvas tal como lo está renderizando el CSS
+    const visualWidth = plotCanvas.clientWidth;
+    const visualHeight = plotCanvas.clientHeight;
+
+    // Establecer las propiedades de width y height del canvas para que coincidan con su tamaño visual
+    // Esto es crucial para que el contexto de dibujo interno se ajuste correctamente
+    plotCanvas.width = visualWidth;
+    plotCanvas.height = visualHeight;
+
+    plotCtx.clearRect(0, 0, visualWidth, visualHeight); // Limpiar el canvas antes de redibujar
 
     // Dibujar grilla y ejes usando los rangos globales
-    drawGridAndAxes(width, height, xMinGlobal, xMaxGlobal, yMinGlobal, yMaxGlobal);
+    // Pasa visualWidth y visualHeight a drawGridAndAxes
+    drawGridAndAxes(visualWidth, visualHeight, xMinGlobal, xMaxGlobal, yMinGlobal, yMaxGlobal);
 
     // Calcular factores de escala para mapear valores latentes a píxeles
     // Usar los mismos "effective" width/height y "offset" que en drawGridAndAxes
-    const effectiveWidth = width - 2 * plotMargin - 20;
-    const effectiveHeight = height - 2 * plotMargin - 20;
+    const effectiveWidth = visualWidth - 2 * plotMargin - 20;
+    const effectiveHeight = visualHeight - 2 * plotMargin - 20;
     const xOffset = plotMargin + 10;
     const yOffset = plotMargin + 10;
 
@@ -226,7 +234,7 @@ function drawLatentSpace() {
         // Convertir coordenadas latentes a coordenadas de píxeles en el canvas
         const xPixel = xOffset + (point.x - xMinGlobal) * xScale;
         // El eje Y del canvas va de arriba (0) a abajo (max), así que lo invertimos para el gráfico
-        const yPixel = height - yOffset - (point.y - yMinGlobal) * yScale;
+        const yPixel = visualHeight - yOffset - (point.y - yMinGlobal) * yScale;
 
         // Dibujar el círculo
         plotCtx.beginPath();
@@ -310,6 +318,11 @@ async function generateLetter(latentVector) {
 
 
 // --- Event Listeners ---
+
+// Listener para cuando la ventana cambie de tamaño
+window.addEventListener('resize', () => {
+    drawLatentSpace();
+});
 
 // Listener para los clics en el canvas del espacio latente
 plotCanvas.addEventListener('click', async (event) => {
