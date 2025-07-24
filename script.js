@@ -63,10 +63,11 @@ async function loadLatentData() {
         // --- Calcular los rangos reales y ajustar los sliders ---
         const xCoords = plotData.map(p => p.x);
         const yCoords = plotData.map(p => p.y);
-        xMinGlobal = Math.min(...xCoords);
-        xMaxGlobal = Math.max(...xCoords);
-        yMinGlobal = Math.min(...yCoords);
-        yMaxGlobal = Math.max(...yCoords);
+
+        const xMinData = Math.min(...xCoords);
+        const xMaxData = Math.max(...xCoords);
+        const yMinData = Math.min(...yCoords);
+        const yMaxData = Math.max(...yCoords);
 
         const paddingFactor = 0.05; // Un 5% de espacio adicional en los bordes
         const xRange = xMaxData - xMinData;
