@@ -1,5 +1,5 @@
 // --- RUTAS DE ARCHIVOS ---
-const modelPath = './tfjs_decoder_model_20250724_130459/model.json';
+const modelPath = './tfjs_decoder_model_20250724_135134/model.json';
 const latentDataPath = './latent_space_data_20250724_130013.json';
 
 // --- Variables Globales ---
