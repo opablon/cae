@@ -190,7 +190,7 @@ function drawGridAndAxes(width, height, xMin, xMax, yMin, yMax) {
     plotCtx.fillText('Dimensión Latente 1', width / 2, height - plotMargin + 40); // Ajustado
 
     plotCtx.save(); // Guarda el estado actual del contexto
-    plotCtx.translate(plotMargin - 65, height / 2); // Mueve el origen para rotar (AJUSTADO AÚN MÁS)
+    plotCtx.translate(plotMargin - 55, height / 2); // Mueve el origen para rotar (AJUSTADO AÚN MÁS)
     plotCtx.rotate(-Math.PI / 2); // Rota 90 grados a la izquierda
     plotCtx.fillText('Dimensión Latente 2', 0, 0);
     plotCtx.restore(); // Restaura el estado original del contexto
