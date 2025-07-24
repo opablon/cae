@@ -68,6 +68,15 @@ async function loadLatentData() {
         yMinGlobal = Math.min(...yCoords);
         yMaxGlobal = Math.max(...yCoords);
 
+        const paddingFactor = 0.05; // Un 5% de espacio adicional en los bordes
+        const xRange = xMaxData - xMinData;
+        const yRange = yMaxData - yMinData;
+
+        xMinGlobal = xMinData - xRange * paddingFactor;
+        xMaxGlobal = xMaxData + xRange * paddingFactor;
+        yMinGlobal = yMinData - yRange * paddingFactor;
+        yMaxGlobal = yMaxData + yRange * paddingFactor;
+
         // Ajustar los sliders al rango real de los datos latentes
         // Añadimos un pequeño margen extra para que no estén justo en el borde
         const sliderPadding = 5; 
