@@ -60,6 +60,10 @@ p {
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
     flex: 3; /* Ocupa 3 partes de 10 */
     min-width: 250px; /* Ancho mínimo para que se vea legible */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra los elementos horizontalmente */
+    justify-content: flex-start; /* Alinea los elementos al principio verticalmente */
 }
 
 .latent-space-plot h2, .output-panel h2, .controls-panel h2 {
@@ -67,6 +71,14 @@ p {
     margin-top: 0;
     margin-bottom: 20px;
     font-size: 1.6em;
+}
+
+/* Estilos para el nuevo h3 dentro de output-panel */
+.output-panel h3 {
+    color: #555; /* Un color más suave que el h2 */
+    margin-top: 20px; /* Espacio antes del título de ajuste fino */
+    margin-bottom: 15px;
+    font-size: 1.2em;
 }
 
 canvas {
@@ -90,6 +102,7 @@ canvas {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
+    margin-bottom: 15px; /* Añadir margen para separar de las coordenadas */
 }
 
 .coord-inputs {
@@ -98,6 +111,7 @@ canvas {
     align-items: center;
     gap: 5px;
     margin-top: 15px;
+    margin-bottom: 20px;
 }
 
 .coord-inputs label {
@@ -126,15 +140,13 @@ canvas {
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
 }
 
-.controls-panel {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
-    margin-top: 30px;
-    width: 90%;
-    margin-left: auto;
-    margin-right: auto;
+/* --- NUEVOS ESTILOS PARA EL CONTENEDOR DE SLIDERS Y BOTÓN --- */
+.sliders-and-button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; /* Para que ocupe todo el ancho disponible en output-panel */
+    padding: 0 10px; /* Pequeño padding horizontal si lo necesitas */
 }
 
 .slider-group {
@@ -144,13 +156,13 @@ canvas {
     margin-bottom: 15px;
     gap: 10px;
     flex-wrap: wrap;
+    width: 100%; /* Asegurar que el slider group ocupe el ancho */
 }
 
-.slider-group label {
-    font-weight: bold;
-    color: #444;
-    min-width: 150px;
-    text-align: right;
+/* Ajustes para las etiquetas de los sliders dentro del output-panel */
+.output-panel .slider-group label { /* Específico para este contexto */
+    text-align: right; /* Alinea a la derecha las etiquetas dentro de su grupo */
+    min-width: 120px; /* Ajusta el ancho mínimo de la etiqueta */
 }
 
 input[type="range"] {
@@ -191,7 +203,8 @@ input[type="range"]::-moz-range-thumb {
     color: #007bff;
 }
 
-button {
+/* Estilos para el botón de Reiniciar Valores (dentro del output-panel ahora) */
+.output-panel button#resetView {
     background-color: #28a745;
     color: white;
     padding: 10px 20px;
@@ -200,10 +213,10 @@ button {
     cursor: pointer;
     font-size: 1em;
     transition: background-color 0.3s ease;
-    margin-top: 20px;
+    margin-top: 10px; /* Menor margen si está muy cerca de los sliders */
 }
 
-button:hover {
+.output-panel button#resetView:hover {
     background-color: #218838;
 }
 
@@ -220,19 +233,28 @@ button:hover {
         min-width: auto;
     }
 
-    input[type="range"] {
-        width: 90%;
-        max-width: none;
+    /* Ajustes específicos para sliders y labels en pantallas pequeñas dentro del output-panel */
+    .output-panel .slider-group {
+        flex-direction: column; /* Apilar label, input, span */
+        gap: 5px; /* Menor espacio entre ellos */
+        align-items: center; /* Centrar al apilar */
     }
 
-    .slider-group label {
-        text-align: center;
-        width: 100%;
+    .output-panel .slider-group label {
+        text-align: center; /* Centrar texto de label */
+        width: 100%; /* Que ocupe todo el ancho disponible */
+        margin-right: 0; /* Eliminar margen derecho si no hay elementos al lado */
         margin-bottom: 5px;
     }
 
-    .slider-group {
-        flex-direction: column;
-        gap: 0;
+    .output-panel .slider-group input[type="range"] {
+        width: 90%; /* Ajusta el ancho del slider */
+        max-width: none;
+    }
+
+    .output-panel .slider-group span {
+        text-align: center;
+        width: 100%;
+        margin-left: 0;
     }
 }
