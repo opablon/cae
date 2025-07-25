@@ -353,4 +353,32 @@ input[type="range"]::-moz-range-thumb {
         width: 100%;
         margin-left: 0;
     }
+
+    /* Ajustes de responsividad para la sección teórica */
+    .theory-section {
+        padding: 20px;
+        margin-top: 30px;
+        max-width: 95%; /* Ocupa más ancho en pantallas pequeñas */
+    }
+
+    .theory-section h2 {
+        font-size: 1.8em;
+    }
+
+    .theory-section h3 {
+        font-size: 1.3em;
+    }
+
+    .theory-section p, .theory-section ul li {
+        font-size: 0.95em;
+    }
+
+    .image-container {
+        padding: 10px;
+        margin: 20px 0;
+    }
+
+    .image-container .image-caption {
+        font-size: 0.85em;
+    }
 }
