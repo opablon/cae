@@ -440,6 +440,14 @@ inputLatentY.addEventListener('change', () => { // 'change' se dispara al perder
 });
 
 // --- Inicio de la Aplicación ---
-// Cargar el modelo y los datos latentes cuando la página se carga
-loadModel();
-loadLatentData();
+// Función asíncrona para cargar todo secuencialmente y evitar la condición de carrera
+async function initApp() {
+    await loadModel(); // Espera a que el modelo se cargue primero
+    await loadLatentData(); // Luego espera a que los datos latentes se carguen
+    // Una vez que ambas promesas se han resuelto,
+    // las llamadas a `drawLatentSpace()` y `generateLetter([0,0])`
+    // dentro de `loadLatentData()` encontrarán el modelo ya cargado.
+}
+
+// Iniciar la aplicación
+initApp();
