@@ -9,7 +9,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
 </head>
 <body>
-    <div class="container">
+    <div id="loader-overlay">
+        <div class="loader"></div>
+        <p>Cargando modelo...</p>
+    </div>
+    <div class="container hidden">
         <h1>Explorador de Espacio Latente de Caracteres</h1>
         <p>Haz clic en el gráfico de referencia para generar caracteres, o usa los sliders para ajustar manualmente.</p>
 

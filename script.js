@@ -6,6 +6,10 @@ const latentDataPath = './latent_space_data_20250724_130013.json';
 let decoderModel;
 let latentData;
 
+// Obtener referencias a los elementos del DOM (HTML)
+const loaderOverlay = document.getElementById('loader-overlay');
+const mainContainer = document.querySelector('.container');
+
 // Variables globales para los rangos del espacio latente
 let xMinGlobal, xMaxGlobal, yMinGlobal, yMaxGlobal;
 
@@ -442,11 +446,19 @@ inputLatentY.addEventListener('change', () => { // 'change' se dispara al perder
 // --- Inicio de la Aplicación ---
 // Función asíncrona para cargar todo secuencialmente y evitar la condición de carrera
 async function initApp() {
+    // Mostrar el spinner y ocultar el contenido principal
+    loaderOverlay.style.display = 'flex';
+    mainContainer.classList.add('hidden');
+
     await loadModel(); // Espera a que el modelo se cargue primero
     await loadLatentData(); // Luego espera a que los datos latentes se carguen
-    // Una vez que ambas promesas se han resuelto,
-    // las llamadas a `drawLatentSpace()` y `generateLetter([0,0])`
-    // dentro de `loadLatentData()` encontrarán el modelo ya cargado.
+    
+    // Ocultar el spinner y mostrar el contenido principal
+    loaderOverlay.style.display = 'none';
+    mainContainer.classList.remove('hidden');
+    
+    // Redibujar el espacio latente por si el tamaño de la ventana cambió mientras cargaba
+    drawLatentSpace();
 }
 
 // Iniciar la aplicación
