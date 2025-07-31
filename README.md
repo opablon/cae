@@ -6,6 +6,10 @@ Este proyecto presenta una aplicación web interactiva que permite a los usuario
 
 La aplicación permite al usuario seleccionar puntos en un gráfico de espacio latente de referencia o ajustar dimensiones manualmente para observar en tiempo real la reconstrucción del carácter por el decodificador del autoencoder.
 
+## ✅ Deploy en GitHub Pages
+
+[Link](https://opablon.github.io/cae/)
+
 ## ✨ Características Principales
 
 * **Visualización Interactiva del Espacio Latente:** Gráfico 2D que mapea caracteres a un espacio bidimensional, mostrando la distribución de las letras aprendidas.
