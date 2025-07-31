@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import * as tf from '@tensorflow/tfjs';
 
-const MODEL_PATH = '/tfjs_decoder_model_20250724_135134/model.json';
-const LATENT_DATA_PATH = '/latent_space_data_20250724_130013.json';
+const MODEL_PATH = 'tfjs_decoder_model_20250724_135134/model.json';
+const LATENT_DATA_PATH = 'latent_space_data_20250724_130013.json';
 const IMAGE_SIZE = 64;
 const PLOT_POINT_SIZE = 5;
 const PLOT_MARGIN = 40;
