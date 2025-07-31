@@ -46,6 +46,19 @@ function App() {
           </main>
 
           <TheorySection />
+
+          <footer className="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500">
+            <p>
+              <a 
+                href="https://github.com/opablon/cae" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 hover:underline transition-colors duration-300"
+              >
+                Ver el código fuente en GitHub
+              </a>
+            </p>
+          </footer>
         </div>
       </div>
     </>
