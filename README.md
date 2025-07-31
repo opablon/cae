@@ -15,7 +15,11 @@ La aplicación permite al usuario seleccionar puntos en un gráfico de espacio l
 
 ## ⚙️ Tecnologías Utilizadas
 
-* **Frontend:** HTML5, CSS3, JavaScript
+* **Frontend:**
+  * **Framework:** [React](https://react.dev/)
+  * **Bundler/Dev Server:** [Vite](https://vitejs.dev/)
+  * **Estilos CSS:** [Tailwind CSS](https://tailwindcss.com/)
+  * **Visualización de Gráficos:** HTML5 Canvas
 * **Machine Learning (Inferencia en navegador):** [TensorFlow.js](https://www.tensorflow.org/js)
 * **Desarrollo del Modelo ML (Entrenamiento y Exportación):** [Python](https://www.python.org/), [TensorFlow](https://www.tensorflow.org/), [Keras](https://keras.io/)
 * **Entorno de Desarrollo ML:** Google Colab
