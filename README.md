@@ -22,7 +22,7 @@ La aplicación permite al usuario seleccionar puntos en un gráfico de espacio l
   * **Visualización de Gráficos:** HTML5 Canvas
 * **Machine Learning (Inferencia en navegador):** [TensorFlow.js](https://www.tensorflow.org/js)
 * **Desarrollo del Modelo ML (Entrenamiento y Exportación):** [Python](https://www.python.org/), [TensorFlow](https://www.tensorflow.org/), [Keras](https://keras.io/)
-* **Entorno de Desarrollo ML:** Google Colab
+* **Entorno de Desarrollo ML:** [Google Colab](https://colab.google/)
 * **Manipulación de Imágenes:** [PIL (Pillow)](https://pillow.readthedocs.io/en/stable/)
 * **Manipulación de Datos:** [NumPy](https://numpy.org/)
 * **Visualización de Datos (en Colab):** [Matplotlib](https://matplotlib.org/)
