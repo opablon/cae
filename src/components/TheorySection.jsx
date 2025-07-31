@@ -1,4 +1,7 @@
 import React from 'react';
+import redNeuronalBasica from '../assets/red_neuronal_basica.png';
+import operacionConvolucion from '../assets/operacion_convolucion.png';
+import autoencoder from '../assets/autoencoder.png';
 
 const TheorySection = () => {
   return (
@@ -22,7 +25,7 @@ const TheorySection = () => {
         </ul>
         <p>El aprendizaje en una red neuronal artificial implica ajustar estos pesos y sesgos (valores adicionales que permiten a la neurona activar su salida incluso cuando sus entradas son cero) a través de un proceso llamado propagación hacia atrás (backpropagation) y descenso de gradiente (gradient descent), donde la red minimiza la diferencia entre sus predicciones y los valores reales.</p>
         <div className="my-6 text-center">
-            <img src="/red_neuronal_basica.png" alt="Diagrama de una Red Neuronal Artificial Básica" className="inline-block max-w-full h-auto rounded-lg shadow-md"/>
+            <img src={redNeuronalBasica} alt="Diagrama de una Red Neuronal Artificial Básica" className="inline-block max-w-full h-auto rounded-lg shadow-md"/>
             <p className="mt-2 text-sm text-gray-600 italic">Componentes básicos y flujo de datos en una red neuronal artificial.</p>
         </div>
       </div>
@@ -38,7 +41,7 @@ const TheorySection = () => {
         </ul>
         <p>Después de varias capas de convolución y agrupamiento, las características extraídas se "aplanan" y se pasan a capas densas para realizar la tarea final (clasificación, generación, etc.).</p>
         <div className="my-6 text-center">
-            <img src="/operacion_convolucion.png" alt="Diagrama de la operación de convolución y pooling en una CNN" className="inline-block max-w-full h-auto rounded-lg shadow-md"/>
+            <img src={operacionConvolucion} alt="Diagrama de la operación de convolución y pooling en una CNN" className="inline-block max-w-full h-auto rounded-lg shadow-md"/>
             <p className="mt-2 text-sm text-gray-600 italic">Proceso de extracción de características en una Red Neuronal Convolucional.</p>
         </div>
       </div>
@@ -47,7 +50,7 @@ const TheorySection = () => {
         <h3 className="mb-4 text-2xl font-semibold text-blue-800">3. Autocodificadores: Aprendiendo a Comprimir y Generar</h3>
         <p>La aplicación que estás usando se basa en un tipo especial de red neuronal llamada autocodificador (autoencoder). Su objetivo principal es aprender una representación "comprimida" (o latente) de los datos de entrada y luego ser capaz de reconstruir el dato original a partir de esa representación comprimida.</p>
         <div className="my-6 text-center">
-            <img src="/autoencoder.png" alt="Diagrama de la arquitectura de un Autoencoder" className="inline-block max-w-full h-auto rounded-lg shadow-md"/>
+            <img src={autoencoder} alt="Diagrama de la arquitectura de un Autoencoder" className="inline-block max-w-full h-auto rounded-lg shadow-md"/>
             <p className="mt-2 text-sm text-gray-600 italic">Arquitectura básica de un Autocodificador: Codificador, Espacio Latente y Decodificador.</p>
         </div>
         <p>Un Autocodificador se compone de dos partes principales:</p>
