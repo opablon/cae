@@ -25,7 +25,7 @@ const TheorySection = () => {
         </ul>
         <p>El aprendizaje en una red neuronal artificial implica ajustar estos pesos y sesgos (valores adicionales que permiten a la neurona activar su salida incluso cuando sus entradas son cero) a través de un proceso llamado propagación hacia atrás (backpropagation) y descenso de gradiente (gradient descent), donde la red minimiza la diferencia entre sus predicciones y los valores reales.</p>
         <div className="my-6 text-center">
-            <img src={redNeuronalBasica} alt="Diagrama de una Red Neuronal Artificial Básica" className="inline-block max-w-[50%] h-auto rounded-lg shadow-md"/>
+            <img src={redNeuronalBasica} alt="Diagrama de una Red Neuronal Artificial Básica" className="inline-block max-w-[70%] h-auto rounded-lg shadow-md"/>
             <p className="mt-2 text-sm text-gray-600 italic">Componentes básicos y flujo de datos en una red neuronal artificial.</p>
         </div>
       </div>
