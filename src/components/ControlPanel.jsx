@@ -28,7 +28,7 @@ const ControlPanel = ({ latentCoords, latentSpaceBounds, onSliderChange, onReset
 
       <div className="w-full max-w-xs space-y-4">
         <div className="flex flex-col items-center">
-          <label htmlFor="latentDim1" className="self-start w-full text-gray-600">Dimensión Latente 1: <span className="font-bold text-blue-600">{latentCoords.x.toFixed(2)}</span></label>
+          <label htmlFor="latentDim1" className="self-start w-full text-gray-600">X: <span className="font-bold text-blue-600">{latentCoords.x.toFixed(2)}</span></label>
           <input 
             type="range" 
             id="latentDim1" 
@@ -41,7 +41,7 @@ const ControlPanel = ({ latentCoords, latentSpaceBounds, onSliderChange, onReset
           />
         </div>
         <div className="flex flex-col items-center">
-          <label htmlFor="latentDim2" className="self-start w-full text-gray-600">Dimensión Latente 2: <span className="font-bold text-blue-600">{latentCoords.y.toFixed(2)}</span></label>
+          <label htmlFor="latentDim2" className="self-start w-full text-gray-600">Y: <span className="font-bold text-blue-600">{latentCoords.y.toFixed(2)}</span></label>
           <input 
             type="range" 
             id="latentDim2" 
