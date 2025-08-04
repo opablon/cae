@@ -5,11 +5,11 @@ import autoencoder from '../assets/autoencoder.png';
 
 const TheorySection = () => {
   return (
-    <div className="max-w-7xl mx-auto mt-12 text-left text-gray-800">
+    <div className="max-w-7xl mx-auto mt-6 text-left text-gray-800">
       <h2 className="mb-6 text-3xl font-bold text-center text-blue-600">Comprendiendo el Espacio Latente: Un Viaje a través de las Redes Neuronales</h2>
-      <p className="mb-4 leading-relaxed">Esta aplicación interactiva te permite explorar un concepto fascinante en el mundo de las redes neuronales artificiales: el espacio latente. Pero para entender qué es y cómo funciona, primero necesitamos desentrañar algunos principios básicos de las mismas.</p>
+      <p className="leading-relaxed">Esta aplicación interactiva te permite explorar un concepto fascinante en el mundo de las redes neuronales artificiales: el espacio latente. Pero para entender qué es y cómo funciona, primero necesitamos desentrañar algunos principios básicos de las mismas.</p>
 
-      <div className="p-6 my-6 bg-gray-50 rounded-lg">
+      <div className="p-6 my-1 bg-gray-50 rounded-lg">
         <h3 className="mb-4 text-2xl font-semibold text-blue-800">1. ¿Qué es una red neuronal artificial? El cerebro artificial</h3>
         <p>Imagina una red neuronal artificial como un "cerebro" simplificado diseñado para aprender de los datos. Está compuesta por capas de "neuronas" interconectadas, inspiradas en las neuronas biológicas.</p>
         <ul className="pl-5 my-4 space-y-2 list-disc">
@@ -28,9 +28,7 @@ const TheorySection = () => {
             <img src={redNeuronalBasica} alt="Diagrama de una Red Neuronal Artificial Básica" className="inline-block max-w-[70%] h-auto rounded-lg shadow-md"/>
             <p className="mt-2 text-sm text-gray-600 italic">Componentes básicos y flujo de datos en una red neuronal artificial.</p>
         </div>
-      </div>
-
-      <div className="p-6 my-6 bg-gray-50 rounded-lg">
+      
         <h3 className="mb-4 text-2xl font-semibold text-blue-800">2. Redes Neuronales Convolucionales (CNNs): Viendo el Mundo como Imágenes</h3>
         <p>Mientras que una red neuronal "densa" (totalmente conectada) es excelente para datos estructurados, no es la más eficiente para imágenes. Aquí es donde entran en juego las Redes Neuronales Convolucionales (CNNs o ConvNets), diseñadas específicamente para procesar datos con una topología conocida, como imágenes.</p>
         <p>La clave de las CNNs radica en sus capas de convolución y agrupamiento (pooling):</p>
@@ -44,9 +42,7 @@ const TheorySection = () => {
             <img src={operacionConvolucion} alt="Diagrama de la operación de convolución y pooling en una CNN" className="inline-block max-w-[90%] h-auto rounded-lg shadow-md"/>
             <p className="mt-2 text-sm text-gray-600 italic">Proceso de extracción de características en una Red Neuronal Convolucional.</p>
         </div>
-      </div>
-
-      <div className="p-6 my-6 bg-gray-50 rounded-lg">
+      
         <h3 className="mb-4 text-2xl font-semibold text-blue-800">3. Autocodificadores: Aprendiendo a Comprimir y Generar</h3>
         <p>La aplicación que estás usando se basa en un tipo especial de red neuronal llamada autocodificador (autoencoder). Su objetivo principal es aprender una representación "comprimida" (o latente) de los datos de entrada y luego ser capaz de reconstruir el dato original a partir de esa representación comprimida.</p>
         <div className="my-6 text-center">
