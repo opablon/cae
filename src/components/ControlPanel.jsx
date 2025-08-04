@@ -5,25 +5,29 @@ const ControlPanel = ({ latentCoords, latentSpaceBounds, onSliderChange, onReset
 
   return (
     <div className="flex flex-col items-center w-full p-4 mt-4 bg-gray-100 rounded-lg shadow-inner">
-      <h3 className="text-xl font-semibold text-gray-700">Ajuste Fino</h3>
+      <h2 className="text-2xl font-semibold text-blue-700 text-center">Ajuste Fino</h2>
       
       <div className="flex items-center justify-center gap-4 my-4">
-        <label htmlFor="inputLatentX" className="font-bold text-blue-600">X:</label>
-        <input 
-          type="text" 
-          id="inputLatentX" 
-          value={latentCoords.x.toFixed(2)} 
-          onChange={e => onCoordInputChange('x', e.target.value)}
-          className="w-24 p-2 text-center border border-gray-300 rounded-md font-mono"
-        />
-        <label htmlFor="inputLatentY" className="font-bold text-blue-600">Y:</label>
-        <input 
-          type="text" 
-          id="inputLatentY" 
-          value={latentCoords.y.toFixed(2)} 
-          onChange={e => onCoordInputChange('y', e.target.value)}
-          className="w-24 p-2 text-center border border-gray-300 rounded-md font-mono"
-        />
+        <div className="flex items-center gap-2 pl-6">
+          <label htmlFor="inputLatentX" className="font-bold text-blue-600">X:</label>
+          <input 
+            type="text" 
+            id="inputLatentX" 
+            value={latentCoords.x.toFixed(2)} 
+            onChange={e => onCoordInputChange('x', e.target.value)}
+            className="w-24 p-2 text-center border border-gray-300 rounded-md font-mono"
+          />
+        </div>
+        <div className="flex items-center gap-2 pr-6">
+          <label htmlFor="inputLatentY" className="font-bold text-blue-600">Y:</label>
+          <input 
+            type="text" 
+            id="inputLatentY" 
+            value={latentCoords.y.toFixed(2)} 
+            onChange={e => onCoordInputChange('y', e.target.value)}
+            className="w-24 p-2 text-center border border-gray-300 rounded-md font-mono"
+          />
+        </div>
       </div>
 
       <div className="w-full max-w-xs space-y-4">
