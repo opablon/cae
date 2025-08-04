@@ -199,20 +199,18 @@ export const useAutoencoder = () => {
   // Efecto para dibujar el espacio latente cuando los datos están listos
   useEffect(() => {
     if (decoderModel && latentData) {
-      drawLatentSpace();
+      // drawLatentSpace(); // ELIMINADO: solo LatentSpacePlot.jsx debe dibujar
       generateLetter([latentCoords.x, latentCoords.y]);
       setIsLoading(false);
       const timer = setTimeout(() => setIsAppReady(true), 50); // Pequeño delay para la transición
-      
-      const handleResize = () => drawLatentSpace();
+      const handleResize = () => {/* nada, el canvas se redibuja por React */};
       window.addEventListener('resize', handleResize);
-      
       return () => {
         clearTimeout(timer);
         window.removeEventListener('resize', handleResize);
       };
     }
-  }, [decoderModel, latentData, drawLatentSpace, generateLetter]);
+  }, [decoderModel, latentData, generateLetter]);
 
   // Efecto para generar la letra cuando las coordenadas cambian
   useEffect(() => {
@@ -226,25 +224,32 @@ export const useAutoencoder = () => {
     if (!canvas || !latentSpaceBounds) return;
 
     const rect = canvas.getBoundingClientRect();
+    // Usar el tamaño visual real del canvas
+    const visualWidth = rect.width;
+    const visualHeight = rect.height;
     const xPixel = event.clientX - rect.left;
     const yPixel = event.clientY - rect.top;
-    const { width, height } = canvas;
     const { xMin, xMax, yMin, yMax } = latentSpaceBounds;
 
+    // Usar los mismos offsets y escalas que en el renderizado
     const xOffset = PLOT_MARGIN + 10;
     const yOffset = PLOT_MARGIN + 10;
-
-    if (xPixel < xOffset || xPixel > (width - xOffset) || yPixel < yOffset || yPixel > (height - yOffset)) {
-      return;
-    }
-
-    const effectiveWidth = width - 2 * PLOT_MARGIN - 20;
-    const effectiveHeight = height - 2 * PLOT_MARGIN - 20;
+    const effectiveWidth = visualWidth - 2 * PLOT_MARGIN - 20;
+    const effectiveHeight = visualHeight - 2 * PLOT_MARGIN - 20;
     const xScale = effectiveWidth / (xMax - xMin);
     const yScale = effectiveHeight / (yMax - yMin);
 
+    // Validar que el clic esté dentro del área del gráfico
+    if (
+      xPixel < xOffset || xPixel > (visualWidth - xOffset) ||
+      yPixel < yOffset || yPixel > (visualHeight - yOffset)
+    ) {
+      return;
+    }
+
+    // Mapeo idéntico al renderizado
     const latentX = xMin + (xPixel - xOffset) / xScale;
-    const latentY = yMax - (yPixel - yOffset) / yScale;
+    const latentY = yMin + ((visualHeight - yOffset - yPixel) / yScale);
 
     setLatentCoords({ x: latentX, y: latentY });
   };
@@ -276,6 +281,7 @@ export const useAutoencoder = () => {
     isAppReady,
     latentCoords,
     latentSpaceBounds,
+    latentData,
     plotCanvasRef,
     generatedCanvasRef,
     handlePlotClick,

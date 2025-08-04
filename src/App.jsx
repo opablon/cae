@@ -13,6 +13,7 @@ function App() {
     isAppReady,
     latentCoords,
     latentSpaceBounds,
+    latentData,
     plotCanvasRef,
     generatedCanvasRef,
     handlePlotClick,
@@ -66,28 +67,38 @@ function App() {
     <>
       {isLoading && <Spinner />}
       <div className={`min-h-screen bg-gray-50 font-sans p-4 sm:p-6 lg:p-8 transition-opacity duration-500 ${isAppReady ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-6">
+        <div className="max-w-7xl mx-auto">
           <Header />
-          
           <main ref={mainSectionRef} className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2" onClick={handlePlotClick}>
-              <LatentSpacePlot ref={plotCanvasRef} />
+            <div className="lg:col-span-2 h-full flex flex-col justify-center p-4 bg-gray-100 rounded-lg shadow-inner items-center" onClick={handlePlotClick}>
+              <h2 className="text-2xl font-semibold text-blue-700 text-center">Espacio Latente de Referencia</h2>
+              {isLoading ? (
+                <Spinner />
+              ) : latentCoords && latentSpaceBounds && latentData ? (
+                <LatentSpacePlot
+                  ref={plotCanvasRef}
+                  latentCoords={latentCoords}
+                  latentSpaceBounds={latentSpaceBounds}
+                  latentData={latentData}
+                />
+              ) : (
+                <div className="text-center text-red-600 font-bold p-8">Error: No se pudo cargar el espacio latente.</div>
+              )}
             </div>
-            
-            <div className="flex flex-col gap-6">
-              <GeneratedCharacter ref={generatedCanvasRef} />
-              <ControlPanel 
-                latentCoords={latentCoords}
-                latentSpaceBounds={latentSpaceBounds}
-                onSliderChange={handleSliderChange}
-                onReset={handleReset}
-                onCoordInputChange={handleCoordInputChange}
-              />
+            <div className="h-full flex flex-col justify-start items-start">
+              <div className="flex flex-col items-center w-full max-w-xs gap-2">
+                <GeneratedCharacter ref={generatedCanvasRef} />
+                <ControlPanel 
+                  latentCoords={latentCoords}
+                  latentSpaceBounds={latentSpaceBounds}
+                  onSliderChange={handleSliderChange}
+                  onReset={handleReset}
+                  onCoordInputChange={handleCoordInputChange}
+                />
+              </div>
             </div>
           </main>
-
           <TheorySection />
-
           <footer ref={footerRef} className="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500">
             <p>
               <a 
