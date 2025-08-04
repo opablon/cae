@@ -85,7 +85,7 @@ function App() {
                 <div className="text-center text-red-600 font-bold p-8">Error: No se pudo cargar el espacio latente.</div>
               )}
             </div>
-            <div className="h-full flex flex-col justify-start items-start">
+            <div className="h-full flex flex-col content-center items-center">
               <div className="flex flex-col items-center w-full max-w-xs gap-2">
                 <GeneratedCharacter ref={generatedCanvasRef} />
                 <ControlPanel 
