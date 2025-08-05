@@ -6,9 +6,11 @@ import { pixelToWorld } from '../utils/math';
 import { cleanupTensors, throttle } from '../utils/performance';
 import { useErrorHandler } from './useErrorHandler';
 
-export const useAutoencoder = () => {
+export const useAutoencoder = (contentVisible = false) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAppReady, setIsAppReady] = useState(false);
+  const [isFirstCharacterGenerated, setIsFirstCharacterGenerated] = useState(false);
+  const [firstCharacterData, setFirstCharacterData] = useState(null);
   const [decoderModel, setDecoderModel] = useState(null);
   const [latentData, setLatentData] = useState(null);
   const [latentSpaceBounds, setLatentSpaceBounds] = useState(null);
@@ -106,10 +108,10 @@ export const useAutoencoder = () => {
     loadResources();
   }, [calculateBounds, reportError]);
 
-  // Función optimizada para generar letras con limpieza de memoria
-  const generateLetter = useCallback(async (latentVector) => {
-    if (!decoderModel || !generatedCanvasRef.current) {
-      return false;
+  // Función para generar el primer carácter sin canvas (usando canvas temporal)
+  const generateFirstCharacterData = useCallback(async (latentVector) => {
+    if (!decoderModel) {
+      return null;
     }
     
     let latentTensor, outputTensor, imageTensor, normalizedImageTensor;
@@ -120,8 +122,73 @@ export const useAutoencoder = () => {
         await tf.ready();
       }
 
-      const canvas = generatedCanvasRef.current;
-      const ctx = canvas.getContext('2d');
+      // Crear tensores
+      latentTensor = tf.tensor2d([latentVector]);
+      outputTensor = decoderModel.predict(latentTensor);
+      imageTensor = outputTensor.squeeze();
+      normalizedImageTensor = imageTensor.mul(255).round().clipByValue(0, 255).cast('int32');
+      
+      // Obtener datos de imagen
+      const imageDataArray = await normalizedImageTensor.data();
+      
+      // Crear datos RGBA
+      const rgbaData = new Uint8ClampedArray(CONFIG.IMAGE_SIZE * CONFIG.IMAGE_SIZE * 4);
+      for (let i = 0; i < CONFIG.IMAGE_SIZE * CONFIG.IMAGE_SIZE; i++) {
+        const pixelValue = imageDataArray[i];
+        const baseIndex = i * 4;
+        rgbaData[baseIndex] = pixelValue;     // R
+        rgbaData[baseIndex + 1] = pixelValue; // G
+        rgbaData[baseIndex + 2] = pixelValue; // B
+        rgbaData[baseIndex + 3] = 255;       // A
+      }
+
+      return rgbaData;
+
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error al generar datos del primer carácter:', error);
+      return null;
+    } finally {
+      // Limpiar tensores para evitar memory leaks
+      cleanupTensors([latentTensor, outputTensor, imageTensor, normalizedImageTensor]);
+    }
+  }, [decoderModel]);
+
+  // Función optimizada para generar letras con limpieza de memoria
+  const generateLetter = useCallback(async (latentVector) => {
+    if (!generatedCanvasRef.current) {
+      return false;
+    }
+
+    const canvas = generatedCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    // Si es la posición inicial y tenemos datos pre-generados, usarlos
+    if (latentVector[0] === 0 && latentVector[1] === 0 && firstCharacterData) {
+      try {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const imageDataObject = new ImageData(firstCharacterData, CONFIG.IMAGE_SIZE, CONFIG.IMAGE_SIZE);
+        ctx.putImageData(imageDataObject, 0, 0);
+        return true;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error al renderizar primer carácter pre-generado:', error);
+        // Continuar con generación normal
+      }
+    }
+
+    // Generación normal
+    if (!decoderModel) {
+      return false;
+    }
+    
+    let latentTensor, outputTensor, imageTensor, normalizedImageTensor;
+    
+    try {
+      // Verificar que TensorFlow.js esté listo
+      if (!tf.getBackend()) {
+        await tf.ready();
+      }
 
       // Crear tensores
       latentTensor = tf.tensor2d([latentVector]);
@@ -159,7 +226,7 @@ export const useAutoencoder = () => {
       // Limpiar tensores para evitar memory leaks
       cleanupTensors([latentTensor, outputTensor, imageTensor, normalizedImageTensor]);
     }
-  }, [decoderModel, reportError]);
+  }, [decoderModel, firstCharacterData, reportError]);
 
   // Efecto para inicializar la aplicación cuando los recursos están listos
   useEffect(() => {
@@ -169,23 +236,38 @@ export const useAutoencoder = () => {
     }
   }, [decoderModel, latentData, latentSpaceBounds, isAppReady]);
 
-  // Efecto separado para generar la primera letra después de que la app esté lista
+  // Efecto para generar los datos del primer carácter en background
   useEffect(() => {
-    if (isAppReady && decoderModel && generatedCanvasRef.current) {
-      const generateInitialLetter = async () => {
+    if (isAppReady && decoderModel && !firstCharacterData) {
+      const generateInitialData = async () => {
+        const data = await generateFirstCharacterData([latentCoords.x, latentCoords.y]);
+        if (data) {
+          setFirstCharacterData(data);
+          setIsFirstCharacterGenerated(true);
+        }
+      };
+      
+      generateInitialData();
+    }
+  }, [isAppReady, decoderModel, firstCharacterData, generateFirstCharacterData, latentCoords.x, latentCoords.y]);
+
+    // Efecto para renderizar el primer carácter cuando el contenido sea visible
+  useEffect(() => {
+    if (generatedCanvasRef.current && contentVisible && firstCharacterData) {
+      const renderInitialLetter = async () => {
         try {
           await generateLetter([latentCoords.x, latentCoords.y]);
         } catch (error) {
           // eslint-disable-next-line no-console
-          console.error('Error al generar primera letra:', error);
+          console.error('Error al renderizar primera letra:', error);
         }
       };
       
-      // Pequeño delay para asegurar que el canvas esté completamente renderizado
-      const timer = setTimeout(generateInitialLetter, 100);
-      return () => clearTimeout(timer);
+      // Usar requestAnimationFrame para renderizar en el próximo frame
+      const animationFrame = requestAnimationFrame(renderInitialLetter);
+      return () => cancelAnimationFrame(animationFrame);
     }
-  }, [isAppReady, decoderModel, generateLetter, latentCoords.x, latentCoords.y]);
+  }, [generatedCanvasRef, contentVisible, firstCharacterData, generateLetter, latentCoords.x, latentCoords.y]);
 
   // Efecto para generar la letra cuando las coordenadas cambian
   useEffect(() => {
@@ -261,6 +343,7 @@ export const useAutoencoder = () => {
   return {
     isLoading,
     isAppReady,
+    isFirstCharacterGenerated,
     latentCoords,
     latentSpaceBounds,
     latentData,
