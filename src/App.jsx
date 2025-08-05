@@ -29,6 +29,11 @@ function App() {
   const footerRef = useRef(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isFooterVisible, setIsFooterVisible] = useState(false);
+  
+  // Estados para controlar las transiciones
+  const [showSpinner, setShowSpinner] = useState(true);
+  const [showContent, setShowContent] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Función throttled para manejar el scroll
   const handleScroll = throttle(() => {
@@ -66,6 +71,24 @@ function App() {
     };
   }, [handleScroll]);
 
+  // Efecto para manejar las transiciones suaves entre spinner y contenido
+  useEffect(() => {
+    if (!isLoading && isAppReady && !isTransitioning) {
+      setIsTransitioning(true);
+      
+      // Fade-out del spinner
+      setTimeout(() => {
+        setShowSpinner(false);
+        
+        // Pequeña pausa antes del fade-in del contenido
+        setTimeout(() => {
+          setShowContent(true);
+          setIsTransitioning(false);
+        }, 100); // Pausa entre transiciones
+      }, 400); // Duración del fade-out del spinner
+    }
+  }, [isLoading, isAppReady, isTransitioning]);
+
   const scrollToMainSection = () => {
     mainSectionRef.current?.scrollIntoView({
       behavior: 'smooth',
@@ -73,14 +96,23 @@ function App() {
     });
   };
 
-  // Renderizar loading spinner hasta que todo esté completamente listo
-  if (isLoading || !isAppReady) {
-    return <Spinner />;
+  // Renderizar componentes según el estado de transición
+  if (showSpinner) {
+    return (
+      <div className={`transition-opacity duration-500 ease-out ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (!showContent) {
+    // Pantalla en blanco durante la transición
+    return <div className="min-h-screen bg-gray-50" />;
   }
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 font-sans p-4 sm:p-6 lg:p-8">
+      <div className={`min-h-screen bg-gray-50 font-sans p-4 sm:p-6 lg:p-8 transition-opacity duration-600 ease-in ${showContent ? 'opacity-100' : 'opacity-0'}`}>
         <div className="max-w-7xl mx-auto">
           <Header />
           
