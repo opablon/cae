@@ -124,15 +124,18 @@ export const useAutoencoder = () => {
   useEffect(() => {
     if (decoderModel && latentData && latentSpaceBounds) {
       generateLetter([latentCoords.x, latentCoords.y]);
-      setIsLoading(false);
       
-      const timer = setTimeout(() => setIsAppReady(true), CONFIG.TRANSITION_DELAY);
+      // Pequeño delay para asegurar que la primera letra se genera antes de mostrar la UI
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        setIsAppReady(true);
+      }, CONFIG.TRANSITION_DELAY);
       
       return () => {
         clearTimeout(timer);
       };
     }
-  }, [decoderModel, latentData, latentSpaceBounds, latentCoords, generateLetter]);
+  }, [decoderModel, latentData, latentSpaceBounds, generateLetter]);
 
   // Efecto para generar la letra cuando las coordenadas cambian
   useEffect(() => {

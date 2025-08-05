@@ -73,14 +73,14 @@ function App() {
     });
   };
 
-  // Renderizar loading spinner de manera optimizada
-  if (isLoading) {
+  // Renderizar loading spinner hasta que todo esté completamente listo
+  if (isLoading || !isAppReady) {
     return <Spinner />;
   }
 
   return (
     <>
-      <div className={`min-h-screen bg-gray-50 font-sans p-4 sm:p-6 lg:p-8 transition-opacity duration-500 ${isAppReady ? 'opacity-100' : 'opacity-0'}`}>
+      <div className="min-h-screen bg-gray-50 font-sans p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
           <Header />
           
