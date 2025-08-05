@@ -3,10 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Explorador de Espacio Latente de Caracteres</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>Explorador de Espacio Latente - Autoencoder Interactivo</title>
+    <meta name="description" content="Explora interactivamente el espacio latente de un autoencoder neural. Genera caracteres únicos navegando por representaciones multidimensionales." />
+    <meta name="keywords" content="autoencoder, espacio latente, redes neuronales, inteligencia artificial, machine learning, tensorflow, interactive" />
+    <meta name="author" content="CAE Project" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://opablon.github.io/cae/" />
+    <meta property="og:title" content="Explorador de Espacio Latente - Autoencoder Interactivo" />
+    <meta property="og:description" content="Explora interactivamente el espacio latente de un autoencoder neural. Genera caracteres únicos navegando por representaciones multidimensionales." />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://opablon.github.io/cae/" />
+    <meta property="twitter:title" content="Explorador de Espacio Latente - Autoencoder Interactivo" />
+    <meta property="twitter:description" content="Explora interactivamente el espacio latente de un autoencoder neural. Genera caracteres únicos navegando por representaciones multidimensionales." />
+    
+    <!-- Performance optimizations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Theme color for mobile browsers -->
+    <meta name="theme-color" content="#1d4ed8" />
+    
+    <!-- Disable zoom on mobile for better UX -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="./src/main.jsx"></script>
+    
+    <!-- Fallback for browsers without JavaScript -->
+    <noscript>
+      <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h1>JavaScript Requerido</h1>
+        <p>Esta aplicación requiere JavaScript para funcionar. Por favor, habilita JavaScript en tu navegador.</p>
+      </div>
+    </noscript>
   </body>
 </html>

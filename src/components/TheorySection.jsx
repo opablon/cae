@@ -1,4 +1,3 @@
-import React from 'react';
 import redNeuronalBasica from '../assets/red_neuronal_basica.png';
 import operacionConvolucion from '../assets/operacion_convolucion.png';
 import autoencoder from '../assets/autoencoder.png';

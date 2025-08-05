@@ -1,6 +1,6 @@
-import React from 'react';
+import { forwardRef } from 'react';
 
-const GeneratedCharacter = React.forwardRef((props, ref) => {
+const GeneratedCharacter = forwardRef((props, ref) => {
   return (
     <div className="w-full p-4 bg-gray-100 rounded-lg shadow-inner flex flex-col items-center">
       <h2 className="text-2xl font-semibold text-blue-700 text-center">Carácter Generado</h2>
@@ -8,5 +8,7 @@ const GeneratedCharacter = React.forwardRef((props, ref) => {
     </div>
   );
 });
+
+GeneratedCharacter.displayName = 'GeneratedCharacter';
 
 export default GeneratedCharacter;
