@@ -13,8 +13,8 @@ export const useAutoencoder = () => {
   const [latentData, setLatentData] = useState(null);
   const [latentSpaceBounds, setLatentSpaceBounds] = useState(null);
   const [latentCoords, setLatentCoords] = useState({ x: 0, y: 0 });
-  const [resourcesLoaded, setResourcesLoaded] = useState(false);
-
+  
+  const resourcesLoaded = useRef(false);
   const plotCanvasRef = useRef(null);
   const generatedCanvasRef = useRef(null);
   const { reportError } = useErrorHandler();
@@ -41,23 +41,23 @@ export const useAutoencoder = () => {
 
     // Carga del modelo y los datos con manejo de errores mejorado
   useEffect(() => {
-    if (resourcesLoaded) return; // Evitar doble carga
+    if (resourcesLoaded.current) return; // Evitar doble carga
     
     const loadResources = async () => {
       try {
-        console.log('Inicializando TensorFlow.js...');
-        
         // Intentar diferentes backends en orden de preferencia
         let backendInitialized = false;
         for (const backend of CONFIG.TENSORFLOW.BACKEND_PREFERENCES) {
           try {
             await tf.setBackend(backend);
             await tf.ready();
-            console.log(`TensorFlow.js backend: ${tf.getBackend()}`);
             backendInitialized = true;
             break;
           } catch (error) {
-            console.warn(`Backend ${backend} no disponible:`, error.message);
+            // Solo mostrar warning si es el último backend que falla
+            if (backend === CONFIG.TENSORFLOW.BACKEND_PREFERENCES[CONFIG.TENSORFLOW.BACKEND_PREFERENCES.length - 1]) {
+              console.warn('Algunos backends de TensorFlow.js no están disponibles, usando fallback');
+            }
             continue;
           }
         }
@@ -66,7 +66,7 @@ export const useAutoencoder = () => {
           throw new Error('No se pudo inicializar ningún backend de TensorFlow.js');
         }
         
-        // Cargar modelo y datos
+        // Cargar modelo y datos en paralelo
         const [model, response] = await Promise.all([
           tf.loadGraphModel(CONFIG.MODEL_PATH),
           fetch(CONFIG.LATENT_DATA_PATH)
@@ -92,18 +92,17 @@ export const useAutoencoder = () => {
         setDecoderModel(model);
         setLatentData(plotData);
         setLatentSpaceBounds(calculateBounds(plotData));
-        setResourcesLoaded(true);
-        console.log('Recursos cargados exitosamente');
+        resourcesLoaded.current = true;
 
       } catch (error) {
-        console.error('Error al cargar recursos:', error);
+        console.error('Error al cargar recursos del autoencoder:', error);
         reportError(error, 'Error al cargar recursos del autoencoder');
         setIsLoading(false);
       }
     };
 
     loadResources();
-  }, [calculateBounds, reportError, resourcesLoaded]);
+  }, [calculateBounds, reportError]);
 
   // Función optimizada para generar letras con limpieza de memoria
   const generateLetter = useCallback(async (latentVector) => {
@@ -162,7 +161,6 @@ export const useAutoencoder = () => {
   // Efecto para inicializar la aplicación cuando los recursos están listos
   useEffect(() => {
     if (decoderModel && latentData && latentSpaceBounds && !isAppReady) {
-      console.log('Aplicación inicializada exitosamente');
       setIsLoading(false);
       setIsAppReady(true);
     }
