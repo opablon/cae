@@ -151,13 +151,20 @@ const LatentSpacePlot = React.forwardRef((props, ref) => {
     ctx.stroke();
   }, [latentCoords, latentSpaceBounds, latentData, ref]);
 
-  // Versión throttled del dibujo para resize
-  const throttledDraw = useCallback(throttle(() => {
+  // Función de dibujo sin throttle
+  const drawFunction = useCallback(() => {
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
     }
     animationFrameRef.current = requestAnimationFrame(draw);
-  }, 16), [draw]); // ~60fps
+  }, [draw]);
+
+  // Versión throttled del dibujo para resize
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const throttledDraw = useCallback(
+    throttle(drawFunction, 16),
+    [drawFunction]
+  ); // ~60fps
 
   useEffect(() => {
     // Dibujar inmediatamente cuando cambien las dependencias

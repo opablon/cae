@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import { CONFIG } from '../config/constants';
 import { isValidLatentCoords, isValidBounds } from '../utils/validation';
-import { clamp, pixelToWorld } from '../utils/math';
+import { pixelToWorld } from '../utils/math';
 import { cleanupTensors, throttle } from '../utils/performance';
 import { useErrorHandler } from './useErrorHandler';
 
@@ -56,6 +56,7 @@ export const useAutoencoder = () => {
           } catch (error) {
             // Solo mostrar warning si es el último backend que falla
             if (backend === CONFIG.TENSORFLOW.BACKEND_PREFERENCES[CONFIG.TENSORFLOW.BACKEND_PREFERENCES.length - 1]) {
+              // eslint-disable-next-line no-console
               console.warn('Algunos backends de TensorFlow.js no están disponibles, usando fallback');
             }
             continue;
@@ -95,6 +96,7 @@ export const useAutoencoder = () => {
         resourcesLoaded.current = true;
 
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error al cargar recursos del autoencoder:', error);
         reportError(error, 'Error al cargar recursos del autoencoder');
         setIsLoading(false);
@@ -149,6 +151,7 @@ export const useAutoencoder = () => {
       return true; // Éxito
 
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error al generar letra:', error);
       reportError(error, 'Error al generar letra');
       return false; // Error
@@ -173,6 +176,7 @@ export const useAutoencoder = () => {
         try {
           await generateLetter([latentCoords.x, latentCoords.y]);
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Error al generar primera letra:', error);
         }
       };
@@ -190,8 +194,8 @@ export const useAutoencoder = () => {
     }
   }, [latentCoords, generateLetter, isAppReady]);
 
-  // Función throttled para manejar clics en el plot
-  const handlePlotClick = useCallback(throttle((event) => {
+  // Función para manejar clics en el plot (sin throttle en useCallback)
+  const plotClickHandler = useCallback((event) => {
     const canvas = plotCanvasRef.current;
     if (!canvas || !isValidBounds(latentSpaceBounds)) return;
 
@@ -220,7 +224,14 @@ export const useAutoencoder = () => {
 
     const worldCoords = pixelToWorld(pixelCoords, latentSpaceBounds, canvasInfo);
     setLatentCoords(worldCoords);
-  }, 50), [latentSpaceBounds]);
+  }, [latentSpaceBounds]);
+
+  // Función throttled para manejar clics en el plot
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handlePlotClick = useCallback(
+    throttle(plotClickHandler, 50),
+    [plotClickHandler]
+  );
 
   const handleSliderChange = useCallback((dim, value) => {
     const numValue = parseFloat(value);

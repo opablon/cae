@@ -76,6 +76,7 @@ export const checkMemoryLeaks = () => {
   if (typeof window !== 'undefined' && window.tf && window.tf.memory) {
     const memInfo = window.tf.memory();
     if (memInfo.numTensors > 100) { // Umbral configurable
+      // eslint-disable-next-line no-console
       console.warn('Posible memory leak detectado. Tensores en memoria:', memInfo.numTensors);
     }
   }

@@ -15,6 +15,7 @@ export const useErrorHandler = () => {
       const result = await asyncFunction();
       return result;
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(errorMessage, err);
       setError({
         message: errorMessage,
@@ -41,6 +42,7 @@ export const useErrorHandler = () => {
       url: window.location.href
     };
     
+    // eslint-disable-next-line no-console
     console.error('Error reportado:', errorInfo);
     
     // Aquí podrías enviar el error a un servicio de logging como Sentry
