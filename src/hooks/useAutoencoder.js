@@ -172,14 +172,32 @@ export const useAutoencoder = () => {
     if (decoderModel && latentData && latentSpaceBounds && !isAppReady) {
       console.log('Recursos listos, inicializando aplicación...');
       
-      // Por ahora, inicializar sin generar letra para debug
-      setTimeout(() => {
-        console.log('Aplicación lista (sin primera letra)');
-        setIsLoading(false);
-        setIsAppReady(true);
-      }, 500);
+      // Inicializar aplicación inmediatamente
+      setIsLoading(false);
+      setIsAppReady(true);
+      console.log('Aplicación lista');
     }
   }, [decoderModel, latentData, latentSpaceBounds, isAppReady]);
+
+  // Efecto separado para generar la primera letra después de que la app esté lista
+  useEffect(() => {
+    if (isAppReady && decoderModel && generatedCanvasRef.current) {
+      console.log('Generando primera letra...');
+      
+      const generateInitialLetter = async () => {
+        try {
+          await generateLetter([latentCoords.x, latentCoords.y]);
+          console.log('Primera letra generada exitosamente');
+        } catch (error) {
+          console.error('Error al generar primera letra:', error);
+        }
+      };
+      
+      // Pequeño delay para asegurar que el canvas esté completamente renderizado
+      const timer = setTimeout(generateInitialLetter, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isAppReady, decoderModel, generateLetter, latentCoords.x, latentCoords.y]);
 
   // Efecto para generar la letra cuando las coordenadas cambian
   useEffect(() => {
