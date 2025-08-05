@@ -20,10 +20,10 @@ La aplicación permite al usuario seleccionar puntos en un gráfico de espacio l
 ## ⚙️ Tecnologías Utilizadas
 
 * **Frontend:**
-  * **Framework:** [React](https://react.dev/)
-  * **Bundler/Dev Server:** [Vite](https://vitejs.dev/)
-  * **Estilos CSS:** [Tailwind CSS](https://tailwindcss.com/)
-  * **Visualización de Gráficos:** HTML5 Canvas
+  * **Framework:** [React](https://react.dev/)
+  * **Bundler/Dev Server:** [Vite](https://vitejs.dev/)
+  * **Estilos CSS:** [Tailwind CSS](https://tailwindcss.com/)
+  * **Visualización de Gráficos:** HTML5 Canvas
 * **Machine Learning (Inferencia en navegador):** [TensorFlow.js](https://www.tensorflow.org/js)
 * **Desarrollo del Modelo ML (Entrenamiento y Exportación):** [Python](https://www.python.org/), [TensorFlow](https://www.tensorflow.org/), [Keras](https://keras.io/)
 * **Entorno de Desarrollo ML:** [Google Colab](https://colab.google/)
@@ -31,11 +31,13 @@ La aplicación permite al usuario seleccionar puntos en un gráfico de espacio l
 * **Manipulación de Datos:** [NumPy](https://numpy.org/)
 * **Visualización de Datos (en Colab):** [Matplotlib](https://matplotlib.org/)
 
+---
+
 ## 🧠 El Modelo (Autoencoder Convolucional)
 
 El corazón de esta aplicación es un **Autoencoder Convolucional** diseñado para:
-1.  **Codificar** imágenes de caracteres (64x64 píxeles en escala de grises) en un espacio latente de **2 dimensiones**.
-2.  **Decodificar** un punto de este espacio latente de vuelta a una imagen de carácter.
+1.  **Codificar** imágenes de caracteres (64x64 píxeles en escala de grises) en un espacio latente de **2 dimensiones**.
+2.  **Decodificar** un punto de este espacio latente de vuelta a una imagen de carácter.
 
 El modelo fue entrenado en un entorno de Google Colab utilizando Keras/TensorFlow con un dataset de las letras mayúsculas del alfabeto, generadas programáticamente con una fuente `Roboto-Regular.ttf`.
 
@@ -84,6 +86,16 @@ Las capas Conv2DTranspose (Convolutional Transposed) realizan una operación inv
 El modelo fue entrenado durante 3500 épocas (realizadas en 7 tandas de 500 épocas). Después del entrenamiento, el modelo `decoder` (que es el responsable de generar las imágenes a partir del espacio latente) fue guardado en formato SavedModel de TensorFlow y luego convertido a un `tfjs_graph_model` utilizando `tensorflowjs_converter`. Esto permite que el modelo se cargue y ejecute directamente en el navegador web utilizando TensorFlow.js.
 
 Además, las coordenadas latentes de todos los caracteres entrenados fueron extraídas con el `encoder` y guardadas en un archivo JSON para servir como referencia en el gráfico interactivo de la aplicación web.
+
+---
+
+## 💻 Código Fuente y Reproducción
+
+El código que utilicé para la generación del dataset de caracteres, la construcción del autoencoder, el entrenamiento incremental y la exportación de los modelos y datos se encuentra en el archivo [`train_and_export_model.py`](./train_and_export_model.py).
+
+Este script es una guía completa para reproducir el proceso desde cero. Simplemente clona el repositorio, instala las dependencias de Python y ejecuta el script.
+
+---
 
 ## 🤝 Contribuciones
 
