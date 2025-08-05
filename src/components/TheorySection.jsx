@@ -1,8 +1,20 @@
+import { useEffect } from 'react';
 import redNeuronalBasica from '../assets/red_neuronal_basica.png';
 import operacionConvolucion from '../assets/operacion_convolucion.png';
 import autoencoder from '../assets/autoencoder.png';
 
-const TheorySection = () => {
+const TheorySection = ({ onReady }) => {
+  // Notificar cuando el componente esté listo
+  useEffect(() => {
+    // Pequeño delay para asegurar que las imágenes estén cargadas
+    const timer = setTimeout(() => {
+      if (onReady) {
+        onReady();
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [onReady]);
   return (
     <div className="max-w-7xl mx-auto mt-6 text-left text-gray-800">
       <h2 className="mb-6 text-3xl font-bold text-center text-blue-600">Comprendiendo el Espacio Latente: Un Viaje a través de las Redes Neuronales</h2>

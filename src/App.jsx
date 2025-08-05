@@ -11,20 +11,6 @@ import { throttle } from './utils/performance';
 const TheorySection = lazy(() => import('./components/TheorySection'));
 
 function App() {
-  const {
-    isLoading,
-    isAppReady,
-    latentCoords,
-    latentSpaceBounds,
-    latentData,
-    plotCanvasRef,
-    generatedCanvasRef,
-    handlePlotClick,
-    handleSliderChange,
-    handleCoordInputChange,
-    handleReset,
-  } = useAutoencoder();
-
   const mainSectionRef = useRef(null);
   const footerRef = useRef(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
@@ -34,6 +20,23 @@ function App() {
   const [showSpinner, setShowSpinner] = useState(true);
   const [showContent, setShowContent] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionCompleted, setTransitionCompleted] = useState(false);
+  const [isTheorySectionReady, setIsTheorySectionReady] = useState(false);
+
+  const {
+    isLoading,
+    isAppReady,
+    isFirstCharacterGenerated,
+    latentCoords,
+    latentSpaceBounds,
+    latentData,
+    plotCanvasRef,
+    generatedCanvasRef,
+    handlePlotClick,
+    handleSliderChange,
+    handleCoordInputChange,
+    handleReset,
+  } = useAutoencoder(showContent);
 
   // Función throttled para manejar el scroll
   const handleScroll = throttle(() => {
@@ -73,21 +76,37 @@ function App() {
 
   // Efecto para manejar las transiciones suaves entre spinner y contenido
   useEffect(() => {
-    if (!isLoading && isAppReady && !isTransitioning) {
+    if (!isLoading && isAppReady && isFirstCharacterGenerated && isTheorySectionReady && !isTransitioning && !transitionCompleted) {
       setIsTransitioning(true);
       
       // Fade-out del spinner
       setTimeout(() => {
         setShowSpinner(false);
         
-        // Pequeña pausa antes del fade-in del contenido
+        // Pausa antes del fade-in del contenido
         setTimeout(() => {
           setShowContent(true);
-          setIsTransitioning(false);
-        }, 100); // Pausa entre transiciones
+          
+          // Esperar a que termine la animación de fade-in antes de finalizar
+          setTimeout(() => {
+            setIsTransitioning(false);
+            setTransitionCompleted(true);
+          }, 700); // Tiempo para completar la animación de fade-in (600ms + buffer)
+        }, 200); // Pausa un poco más larga para el canvas
       }, 400); // Duración del fade-out del spinner
     }
-  }, [isLoading, isAppReady, isTransitioning]);
+  }, [isLoading, isAppReady, isFirstCharacterGenerated, isTheorySectionReady, isTransitioning, transitionCompleted]);
+
+  // Efecto para marcar la sección teórica como lista después de que la app esté lista
+  useEffect(() => {
+    if (isAppReady && !isTheorySectionReady) {
+      // Dar tiempo para que la sección teórica se prepare
+      const timer = setTimeout(() => {
+        setIsTheorySectionReady(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isAppReady, isTheorySectionReady]);
 
   const scrollToMainSection = () => {
     mainSectionRef.current?.scrollIntoView({
@@ -163,7 +182,7 @@ function App() {
               <div className="text-gray-500">Cargando contenido teórico...</div>
             </div>
           }>
-            <TheorySection />
+            <TheorySection onReady={() => setIsTheorySectionReady(true)} />
           </Suspense>
           
           {/* Footer */}
