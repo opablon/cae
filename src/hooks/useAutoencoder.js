@@ -230,16 +230,9 @@ export const useAutoencoder = () => {
   }, []);
 
   const handleCoordInputChange = useCallback((dim, value) => {
-    const parsedValue = parseFloat(value);
-    if (!isNaN(parsedValue) && isValidBounds(latentSpaceBounds)) {
-      const { xMin, xMax, yMin, yMax } = latentSpaceBounds;
-      const clampedValue = dim === 'x' 
-        ? clamp(parsedValue, xMin, xMax)
-        : clamp(parsedValue, yMin, yMax);
-      
-      setLatentCoords(prev => ({ ...prev, [dim]: clampedValue }));
-    }
-  }, [latentSpaceBounds]);
+    // El valor ya viene procesado desde el ControlPanel
+    setLatentCoords(prev => ({ ...prev, [dim]: value }));
+  }, []);
 
   const handleReset = useCallback(() => {
     setLatentCoords({ x: 0, y: 0 });

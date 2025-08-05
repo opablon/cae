@@ -1,8 +1,23 @@
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { CONFIG } from '../config/constants';
 import { isValidBounds } from '../utils/validation';
+import { clamp } from '../utils/math';
 
 const ControlPanel = memo(({ latentCoords, latentSpaceBounds, onSliderChange, onReset, onCoordInputChange }) => {
+  // Estado local para los inputs de coordenadas
+  const [localCoords, setLocalCoords] = useState({
+    x: latentCoords.x.toFixed(CONFIG.COORDINATE_PRECISION),
+    y: latentCoords.y.toFixed(CONFIG.COORDINATE_PRECISION)
+  });
+
+  // Sincronizar el estado local cuando cambien las coordenadas externas
+  useEffect(() => {
+    setLocalCoords({
+      x: latentCoords.x.toFixed(CONFIG.COORDINATE_PRECISION),
+      y: latentCoords.y.toFixed(CONFIG.COORDINATE_PRECISION)
+    });
+  }, [latentCoords.x, latentCoords.y]);
+
   // Valores por defecto seguros
   const bounds = isValidBounds(latentSpaceBounds) 
     ? latentSpaceBounds 
@@ -12,6 +27,48 @@ const ControlPanel = memo(({ latentCoords, latentSpaceBounds, onSliderChange, on
 
   // Formatear coordenadas con la precisión configurada
   const formatCoord = (value) => value.toFixed(CONFIG.COORDINATE_PRECISION);
+
+  // Manejar cambios en los inputs de coordenadas
+  const handleInputChange = (dim, value) => {
+    // Actualizar el estado local inmediatamente para permitir escritura
+    setLocalCoords(prev => ({ ...prev, [dim]: value }));
+  };
+
+  // Manejar cuando el usuario termina de editar (onBlur o Enter)
+  const handleInputCommit = (dim, value) => {
+    const parsedValue = parseFloat(value);
+    
+    if (!isNaN(parsedValue) && isValidBounds(latentSpaceBounds)) {
+      // Clamp del valor dentro de los límites
+      const { xMin, xMax, yMin, yMax } = latentSpaceBounds;
+      const clampedValue = dim === 'x' 
+        ? clamp(parsedValue, xMin, xMax)
+        : clamp(parsedValue, yMin, yMax);
+      
+      // Actualizar las coordenadas reales
+      onCoordInputChange(dim, clampedValue);
+      
+      // Actualizar el estado local con el valor formateado
+      setLocalCoords(prev => ({ 
+        ...prev, 
+        [dim]: clampedValue.toFixed(CONFIG.COORDINATE_PRECISION) 
+      }));
+    } else {
+      // Si el valor no es válido, revertir al valor anterior
+      setLocalCoords(prev => ({ 
+        ...prev, 
+        [dim]: latentCoords[dim].toFixed(CONFIG.COORDINATE_PRECISION)
+      }));
+    }
+  };
+
+  // Manejar Enter en los inputs
+  const handleKeyPress = (e, dim, value) => {
+    if (e.key === 'Enter') {
+      handleInputCommit(dim, value);
+      e.target.blur(); // Quitar el foco para activar onBlur también
+    }
+  };
 
   return (
     <div className="flex flex-col items-center w-full p-4 mt-4 bg-gray-100 rounded-lg shadow-inner">
@@ -29,15 +86,16 @@ const ControlPanel = memo(({ latentCoords, latentSpaceBounds, onSliderChange, on
             X:
           </label>
           <input 
-            type="number" 
+            type="text" 
             id="inputLatentX" 
-            value={formatCoord(latentCoords.x)} 
-            onChange={(e) => onCoordInputChange('x', e.target.value)}
+            value={localCoords.x} 
+            onChange={(e) => handleInputChange('x', e.target.value)}
+            onBlur={(e) => handleInputCommit('x', e.target.value)}
+            onKeyPress={(e) => handleKeyPress(e, 'x', e.target.value)}
             className="w-24 p-2 text-center border border-gray-300 rounded-md font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            step="0.01"
-            min={xMin}
-            max={xMax}
+            placeholder={`${xMin.toFixed(1)} a ${xMax.toFixed(1)}`}
             aria-label="Coordenada X del espacio latente"
+            title={`Ingrese un valor entre ${xMin.toFixed(2)} y ${xMax.toFixed(2)}`}
           />
         </div>
         <div className="flex items-center gap-2 pr-6">
@@ -48,15 +106,16 @@ const ControlPanel = memo(({ latentCoords, latentSpaceBounds, onSliderChange, on
             Y:
           </label>
           <input 
-            type="number" 
+            type="text" 
             id="inputLatentY" 
-            value={formatCoord(latentCoords.y)} 
-            onChange={(e) => onCoordInputChange('y', e.target.value)}
+            value={localCoords.y} 
+            onChange={(e) => handleInputChange('y', e.target.value)}
+            onBlur={(e) => handleInputCommit('y', e.target.value)}
+            onKeyPress={(e) => handleKeyPress(e, 'y', e.target.value)}
             className="w-24 p-2 text-center border border-gray-300 rounded-md font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            step="0.01"
-            min={yMin}
-            max={yMax}
+            placeholder={`${yMin.toFixed(1)} a ${yMax.toFixed(1)}`}
             aria-label="Coordenada Y del espacio latente"
+            title={`Ingrese un valor entre ${yMin.toFixed(2)} y ${yMax.toFixed(2)}`}
           />
         </div>
       </div>
