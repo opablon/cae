@@ -2,7 +2,7 @@
 
 ## 🚀 Visión General
 
-Este proyecto presenta una aplicación web interactiva que permite a los usuarios explorar el **espacio latente** de caracteres generados por un **Autoencoder Convolucional**. El objetivo es visualizar cómo una red neuronal comprime la información de caracteres en una representación de baja dimensión y cómo esta representación puede ser utilizada para generar nuevas variaciones de caracteres.
+Este proyecto presenta una aplicación web interactiva que permite a los usuarios explorar el **espacio latente** de caracteres generados por un **Autoencoder Convolucional**. El objetivo es visualizar cómo una red neuronal comprime la información de caracteres en una representación de baja dimensión y cómo esta representación, que captura las características esenciales y relaciones semánticas de los datos, puede ser utilizada para generar nuevas variaciones de caracteres.
 
 La aplicación permite al usuario seleccionar puntos en un gráfico de espacio latente de referencia o ajustar dimensiones manualmente para observar en tiempo real la reconstrucción del carácter por el decodificador del autoencoder.
 
@@ -12,7 +12,7 @@ La aplicación permite al usuario seleccionar puntos en un gráfico de espacio l
 
 ## ✨ Características Principales
 
-* **Visualización Interactiva del Espacio Latente:** Gráfico 2D que mapea caracteres a un espacio bidimensional, mostrando la distribución de las letras aprendidas.
+* **Visualización Interactiva del Espacio Latente:** Gráfico 2D que mapea caracteres a un espacio bidimensional, mostrando la distribución y las coordenadas latentes de las letras aprendidas.
 * **Generación de Caracteres en Tiempo Real:** Reconstrucción de caracteres basada en puntos seleccionados en el gráfico o coordenadas ajustadas manualmente.
 * **Controles de Usuario Intuitivos:** Sliders y campos de texto para ajuste fino y entrada directa de coordenadas.
 * **Explicación Teórica Integrada:** La propia aplicación web incluye una sección detallada sobre el funcionamiento de redes neuronales, CNNs y autoencoders, para un aprendizaje contextual.
@@ -77,6 +77,8 @@ El modelo fue entrenado en un entorno de Google Colab utilizando Keras/TensorFlo
 | | **Total params:** | 373,763 |
 | | **Trainable params:** | 373,763 |
 | | **Non-trainable params:** | 0 |
+
+Las capas Conv2DTranspose (Convolutional Transposed) realizan una operación inversa a la convolución para aumentar gradualmente el tamaño del tensor, reconstruyendo la imagen pixel a pixel.
 
 ### **Entrenamiento y Exportación:**
 El modelo fue entrenado durante 3500 épocas (realizadas en 7 tandas de 500 épocas). Después del entrenamiento, el modelo `decoder` (que es el responsable de generar las imágenes a partir del espacio latente) fue guardado en formato SavedModel de TensorFlow y luego convertido a un `tfjs_graph_model` utilizando `tensorflowjs_converter`. Esto permite que el modelo se cargue y ejecute directamente en el navegador web utilizando TensorFlow.js.
