@@ -53,11 +53,11 @@ export const useAutoencoder = () => {
           try {
             await tf.setBackend(backend);
             await tf.ready();
-            console.log(`TensorFlow.js inicializado con backend: ${tf.getBackend()}`);
+            console.log(`TensorFlow.js backend: ${tf.getBackend()}`);
             backendInitialized = true;
             break;
           } catch (error) {
-            console.warn(`No se pudo inicializar backend ${backend}:`, error.message);
+            console.warn(`Backend ${backend} no disponible:`, error.message);
             continue;
           }
         }
@@ -66,15 +66,12 @@ export const useAutoencoder = () => {
           throw new Error('No se pudo inicializar ningún backend de TensorFlow.js');
         }
         
-        // Cargar modelo
-        console.log('Cargando modelo...');
-        const model = await tf.loadGraphModel(CONFIG.MODEL_PATH);
-        setDecoderModel(model);
-        console.log('Modelo cargado exitosamente');
+        // Cargar modelo y datos
+        const [model, response] = await Promise.all([
+          tf.loadGraphModel(CONFIG.MODEL_PATH),
+          fetch(CONFIG.LATENT_DATA_PATH)
+        ]);
 
-        // Cargar datos latentes
-        console.log('Cargando datos latentes...');
-        const response = await fetch(CONFIG.LATENT_DATA_PATH);
         if (!response.ok) {
           throw new Error(`Error al cargar datos: ${response.status} ${response.statusText}`);
         }
@@ -92,13 +89,14 @@ export const useAutoencoder = () => {
           label: data.labels[index],
         }));
         
+        setDecoderModel(model);
         setLatentData(plotData);
         setLatentSpaceBounds(calculateBounds(plotData));
         setResourcesLoaded(true);
-        console.log('Datos latentes cargados exitosamente');
+        console.log('Recursos cargados exitosamente');
 
       } catch (error) {
-        console.error('Error en loadResources:', error);
+        console.error('Error al cargar recursos:', error);
         reportError(error, 'Error al cargar recursos del autoencoder');
         setIsLoading(false);
       }
@@ -109,10 +107,7 @@ export const useAutoencoder = () => {
 
   // Función optimizada para generar letras con limpieza de memoria
   const generateLetter = useCallback(async (latentVector) => {
-    console.log('generateLetter llamada con:', latentVector);
-    
     if (!decoderModel || !generatedCanvasRef.current) {
-      console.log('generateLetter: modelo o canvas no disponible');
       return false;
     }
     
@@ -121,11 +116,9 @@ export const useAutoencoder = () => {
     try {
       // Verificar que TensorFlow.js esté listo
       if (!tf.getBackend()) {
-        console.log('generateLetter: inicializando backend...');
         await tf.ready();
       }
 
-      console.log('generateLetter: generando letra...');
       const canvas = generatedCanvasRef.current;
       const ctx = canvas.getContext('2d');
 
@@ -154,11 +147,10 @@ export const useAutoencoder = () => {
       const imageDataObject = new ImageData(rgbaData, CONFIG.IMAGE_SIZE, CONFIG.IMAGE_SIZE);
       ctx.putImageData(imageDataObject, 0, 0);
 
-      console.log('generateLetter: letra generada exitosamente');
       return true; // Éxito
 
     } catch (error) {
-      console.error('generateLetter: error:', error);
+      console.error('Error al generar letra:', error);
       reportError(error, 'Error al generar letra');
       return false; // Error
     } finally {
@@ -170,24 +162,18 @@ export const useAutoencoder = () => {
   // Efecto para inicializar la aplicación cuando los recursos están listos
   useEffect(() => {
     if (decoderModel && latentData && latentSpaceBounds && !isAppReady) {
-      console.log('Recursos listos, inicializando aplicación...');
-      
-      // Inicializar aplicación inmediatamente
+      console.log('Aplicación inicializada exitosamente');
       setIsLoading(false);
       setIsAppReady(true);
-      console.log('Aplicación lista');
     }
   }, [decoderModel, latentData, latentSpaceBounds, isAppReady]);
 
   // Efecto separado para generar la primera letra después de que la app esté lista
   useEffect(() => {
     if (isAppReady && decoderModel && generatedCanvasRef.current) {
-      console.log('Generando primera letra...');
-      
       const generateInitialLetter = async () => {
         try {
           await generateLetter([latentCoords.x, latentCoords.y]);
-          console.log('Primera letra generada exitosamente');
         } catch (error) {
           console.error('Error al generar primera letra:', error);
         }

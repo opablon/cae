@@ -5,7 +5,9 @@ import ErrorBoundary from './components/ErrorBoundary.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <ErrorBoundary>
-    <App />
-  </ErrorBoundary>
+  <React.StrictMode>
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  </React.StrictMode>,
 )
