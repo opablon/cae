@@ -145,6 +145,7 @@ export const useAutoencoder = (contentVisible = false) => {
       return rgbaData;
 
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error al generar datos del primer carácter:', error);
       return null;
     } finally {
@@ -170,6 +171,7 @@ export const useAutoencoder = (contentVisible = false) => {
         ctx.putImageData(imageDataObject, 0, 0);
         return true;
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error al renderizar primer carácter pre-generado:', error);
         // Continuar con generación normal
       }
@@ -216,6 +218,7 @@ export const useAutoencoder = (contentVisible = false) => {
       return true; // Éxito
 
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error al generar letra:', error);
       reportError(error, 'Error al generar letra');
       return false; // Error
@@ -255,6 +258,7 @@ export const useAutoencoder = (contentVisible = false) => {
         try {
           await generateLetter([latentCoords.x, latentCoords.y]);
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Error al renderizar primera letra:', error);
         }
       };
