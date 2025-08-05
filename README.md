@@ -91,7 +91,7 @@ Además, las coordenadas latentes de todos los caracteres entrenados fueron extr
 
 ## 💻 Código Fuente y Reproducción
 
-El código que utilicé para la generación del dataset de caracteres, la construcción del autoencoder, el entrenamiento incremental y la exportación de los modelos y datos se encuentra en el archivo [`train_and_export_model.py`](./train_and_export_model.py).
+El código que utilicé para la generación del dataset de caracteres, la construcción del autoencoder, el entrenamiento incremental y la exportación de los modelos y datos se encuentra en el archivo [`train_and_export_model.py`](./scripts/train_and_export_model.py).
 
 Este script es una guía completa para reproducir el proceso desde cero. Simplemente clona el repositorio, instala las dependencias de Python y ejecuta el script.
 
