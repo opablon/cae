@@ -13,6 +13,7 @@ export const useAutoencoder = () => {
   const [latentData, setLatentData] = useState(null);
   const [latentSpaceBounds, setLatentSpaceBounds] = useState(null);
   const [latentCoords, setLatentCoords] = useState({ x: 0, y: 0 });
+  const [resourcesLoaded, setResourcesLoaded] = useState(false);
 
   const plotCanvasRef = useRef(null);
   const generatedCanvasRef = useRef(null);
@@ -38,11 +39,12 @@ export const useAutoencoder = () => {
     };
   }, []);
 
-  // Carga del modelo y los datos con manejo de errores mejorado
+    // Carga del modelo y los datos con manejo de errores mejorado
   useEffect(() => {
+    if (resourcesLoaded) return; // Evitar doble carga
+    
     const loadResources = async () => {
       try {
-        // Inicializar TensorFlow.js con backend apropiado
         console.log('Inicializando TensorFlow.js...');
         
         // Intentar diferentes backends en orden de preferencia
@@ -92,6 +94,7 @@ export const useAutoencoder = () => {
         
         setLatentData(plotData);
         setLatentSpaceBounds(calculateBounds(plotData));
+        setResourcesLoaded(true);
         console.log('Datos latentes cargados exitosamente');
 
       } catch (error) {
@@ -102,20 +105,27 @@ export const useAutoencoder = () => {
     };
 
     loadResources();
-  }, [calculateBounds, reportError]);
+  }, [calculateBounds, reportError, resourcesLoaded]);
 
   // Función optimizada para generar letras con limpieza de memoria
   const generateLetter = useCallback(async (latentVector) => {
-    if (!decoderModel || !generatedCanvasRef.current) return false;
+    console.log('generateLetter llamada con:', latentVector);
+    
+    if (!decoderModel || !generatedCanvasRef.current) {
+      console.log('generateLetter: modelo o canvas no disponible');
+      return false;
+    }
     
     let latentTensor, outputTensor, imageTensor, normalizedImageTensor;
     
     try {
       // Verificar que TensorFlow.js esté listo
       if (!tf.getBackend()) {
+        console.log('generateLetter: inicializando backend...');
         await tf.ready();
       }
 
+      console.log('generateLetter: generando letra...');
       const canvas = generatedCanvasRef.current;
       const ctx = canvas.getContext('2d');
 
@@ -144,9 +154,11 @@ export const useAutoencoder = () => {
       const imageDataObject = new ImageData(rgbaData, CONFIG.IMAGE_SIZE, CONFIG.IMAGE_SIZE);
       ctx.putImageData(imageDataObject, 0, 0);
 
+      console.log('generateLetter: letra generada exitosamente');
       return true; // Éxito
 
     } catch (error) {
+      console.error('generateLetter: error:', error);
       reportError(error, 'Error al generar letra');
       return false; // Error
     } finally {
@@ -157,36 +169,17 @@ export const useAutoencoder = () => {
 
   // Efecto para inicializar la aplicación cuando los recursos están listos
   useEffect(() => {
-    if (decoderModel && latentData && latentSpaceBounds) {
-      const initializeApp = async () => {
-        try {
-          // Intentar generar la primera letra
-          const success = await generateLetter([latentCoords.x, latentCoords.y]);
-          
-          if (success) {
-            // Pequeño delay adicional para asegurar renderizado
-            setTimeout(() => {
-              setIsLoading(false);
-              setIsAppReady(true);
-            }, 300);
-          } else {
-            // Si falla, intentar de nuevo después de un momento
-            setTimeout(() => {
-              initializeApp();
-            }, 1000);
-          }
-        } catch (error) {
-          reportError(error, 'Error al inicializar aplicación');
-          // Intentar de nuevo
-          setTimeout(() => {
-            initializeApp();
-          }, 1000);
-        }
-      };
-
-      initializeApp();
+    if (decoderModel && latentData && latentSpaceBounds && !isAppReady) {
+      console.log('Recursos listos, inicializando aplicación...');
+      
+      // Por ahora, inicializar sin generar letra para debug
+      setTimeout(() => {
+        console.log('Aplicación lista (sin primera letra)');
+        setIsLoading(false);
+        setIsAppReady(true);
+      }, 500);
     }
-  }, [decoderModel, latentData, latentSpaceBounds, generateLetter, latentCoords.x, latentCoords.y, reportError]);
+  }, [decoderModel, latentData, latentSpaceBounds, isAppReady]);
 
   // Efecto para generar la letra cuando las coordenadas cambian
   useEffect(() => {
