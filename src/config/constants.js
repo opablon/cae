@@ -4,6 +4,12 @@ export const CONFIG = {
   MODEL_PATH: 'tfjs_decoder_model_20250724_135134/model.json',
   LATENT_DATA_PATH: 'latent_space_data_20250724_130013.json',
   
+  // Configuración TensorFlow.js
+  TENSORFLOW: {
+    BACKEND_PREFERENCES: ['webgl', 'webgpu', 'cpu'],
+    INITIALIZATION_TIMEOUT: 5000,
+  },
+  
   // Dimensiones del canvas
   IMAGE_SIZE: 64,
   

@@ -42,11 +42,36 @@ export const useAutoencoder = () => {
   useEffect(() => {
     const loadResources = async () => {
       try {
+        // Inicializar TensorFlow.js con backend apropiado
+        console.log('Inicializando TensorFlow.js...');
+        
+        // Intentar diferentes backends en orden de preferencia
+        let backendInitialized = false;
+        for (const backend of CONFIG.TENSORFLOW.BACKEND_PREFERENCES) {
+          try {
+            await tf.setBackend(backend);
+            await tf.ready();
+            console.log(`TensorFlow.js inicializado con backend: ${tf.getBackend()}`);
+            backendInitialized = true;
+            break;
+          } catch (error) {
+            console.warn(`No se pudo inicializar backend ${backend}:`, error.message);
+            continue;
+          }
+        }
+        
+        if (!backendInitialized) {
+          throw new Error('No se pudo inicializar ningún backend de TensorFlow.js');
+        }
+        
         // Cargar modelo
+        console.log('Cargando modelo...');
         const model = await tf.loadGraphModel(CONFIG.MODEL_PATH);
         setDecoderModel(model);
+        console.log('Modelo cargado exitosamente');
 
         // Cargar datos latentes
+        console.log('Cargando datos latentes...');
         const response = await fetch(CONFIG.LATENT_DATA_PATH);
         if (!response.ok) {
           throw new Error(`Error al cargar datos: ${response.status} ${response.statusText}`);
@@ -67,8 +92,10 @@ export const useAutoencoder = () => {
         
         setLatentData(plotData);
         setLatentSpaceBounds(calculateBounds(plotData));
+        console.log('Datos latentes cargados exitosamente');
 
       } catch (error) {
+        console.error('Error en loadResources:', error);
         reportError(error, 'Error al cargar recursos del autoencoder');
         setIsLoading(false);
       }
@@ -79,11 +106,16 @@ export const useAutoencoder = () => {
 
   // Función optimizada para generar letras con limpieza de memoria
   const generateLetter = useCallback(async (latentVector) => {
-    if (!decoderModel || !generatedCanvasRef.current) return;
+    if (!decoderModel || !generatedCanvasRef.current) return false;
     
     let latentTensor, outputTensor, imageTensor, normalizedImageTensor;
     
     try {
+      // Verificar que TensorFlow.js esté listo
+      if (!tf.getBackend()) {
+        await tf.ready();
+      }
+
       const canvas = generatedCanvasRef.current;
       const ctx = canvas.getContext('2d');
 
@@ -112,8 +144,11 @@ export const useAutoencoder = () => {
       const imageDataObject = new ImageData(rgbaData, CONFIG.IMAGE_SIZE, CONFIG.IMAGE_SIZE);
       ctx.putImageData(imageDataObject, 0, 0);
 
+      return true; // Éxito
+
     } catch (error) {
       reportError(error, 'Error al generar letra');
+      return false; // Error
     } finally {
       // Limpiar tensores para evitar memory leaks
       cleanupTensors([latentTensor, outputTensor, imageTensor, normalizedImageTensor]);
@@ -123,19 +158,35 @@ export const useAutoencoder = () => {
   // Efecto para inicializar la aplicación cuando los recursos están listos
   useEffect(() => {
     if (decoderModel && latentData && latentSpaceBounds) {
-      generateLetter([latentCoords.x, latentCoords.y]);
-      
-      // Pequeño delay para asegurar que la primera letra se genera antes de mostrar la UI
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-        setIsAppReady(true);
-      }, CONFIG.TRANSITION_DELAY);
-      
-      return () => {
-        clearTimeout(timer);
+      const initializeApp = async () => {
+        try {
+          // Intentar generar la primera letra
+          const success = await generateLetter([latentCoords.x, latentCoords.y]);
+          
+          if (success) {
+            // Pequeño delay adicional para asegurar renderizado
+            setTimeout(() => {
+              setIsLoading(false);
+              setIsAppReady(true);
+            }, 300);
+          } else {
+            // Si falla, intentar de nuevo después de un momento
+            setTimeout(() => {
+              initializeApp();
+            }, 1000);
+          }
+        } catch (error) {
+          reportError(error, 'Error al inicializar aplicación');
+          // Intentar de nuevo
+          setTimeout(() => {
+            initializeApp();
+          }, 1000);
+        }
       };
+
+      initializeApp();
     }
-  }, [decoderModel, latentData, latentSpaceBounds, generateLetter]);
+  }, [decoderModel, latentData, latentSpaceBounds, generateLetter, latentCoords.x, latentCoords.y, reportError]);
 
   // Efecto para generar la letra cuando las coordenadas cambian
   useEffect(() => {
