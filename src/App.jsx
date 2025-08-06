@@ -18,7 +18,6 @@ function App() {
   
   // Estados para controlar las transiciones
   const [isAppFullyReady, setIsAppFullyReady] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [transitionCompleted, setTransitionCompleted] = useState(false);
   const [isTheorySectionReady, setIsTheorySectionReady] = useState(false);
 
