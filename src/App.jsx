@@ -12,9 +12,7 @@ const TheorySection = lazy(() => import('./components/TheorySection'));
 
 function App() {
   const mainSectionRef = useRef(null);
-  const footerRef = useRef(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
-  const [isFooterVisible, setIsFooterVisible] = useState(false);
   
   // Estados para controlar las transiciones
   const [isAppFullyReady, setIsAppFullyReady] = useState(false);
@@ -46,29 +44,10 @@ function App() {
   }, 100);
 
   useEffect(() => {
-    // Observer para el footer con mejores opciones
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsFooterVisible(entry.isIntersecting);
-      },
-      { 
-        threshold: 0.1,
-        rootMargin: '50px' // Detectar antes de que sea totalmente visible
-      }
-    );
-
-    const currentFooterRef = footerRef.current;
-    if (currentFooterRef) {
-      observer.observe(currentFooterRef);
-    }
-
     // Listener optimizado para scroll
     window.addEventListener('scroll', handleScroll, { passive: true });
     
     return () => {
-      if (currentFooterRef) {
-        observer.unobserve(currentFooterRef);
-      }
       window.removeEventListener('scroll', handleScroll);
     };
   }, [handleScroll]);
@@ -200,7 +179,7 @@ function App() {
           </div>
           
           {/* Footer */}
-          <footer ref={footerRef} className="mt-4 pt-6 border-t border-gray-200 text-center text-gray-500">
+          <footer className="mt-4 pt-6 border-t border-gray-200 text-center text-gray-500">
             <p>
               <a 
                 href="https://github.com/opablon/cae" 
@@ -216,10 +195,10 @@ function App() {
         </div>
       </div>
       
-      {/* Botón de scroll optimizado */}
+      {/* Botón de scroll con posición fija */}
       <button
         onClick={scrollToMainSection}
-        className={`fixed ${isFooterVisible ? 'bottom-24' : 'bottom-12'} left-1/2 -translate-x-1/2 transform bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out ${
+        className={`fixed bottom-16 left-1/2 -translate-x-1/2 transform bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 ease-in-out ${
           showScrollButton ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full pointer-events-none'
         }`}
         aria-label="Volver al inicio de la aplicación"
