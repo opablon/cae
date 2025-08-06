@@ -180,9 +180,13 @@ function App() {
               </button>
             </div>
             
-            {/* Contenedor colapsable con CSS Grid */}
-            <div className={`theory-collapsible ${isTheoryOpen ? 'open' : ''}`}>
-              <div className="theory-collapsible-content">
+            {/* Contenedor colapsable con Tailwind CSS Grid */}
+            <div className={`grid transition-all duration-300 ease-out ${
+              isTheoryOpen 
+                ? 'grid-rows-[1fr] opacity-100' 
+                : 'grid-rows-[0fr] opacity-0'
+            }`}>
+              <div className="overflow-hidden">
                 {/* Lazy loading de la sección de teoría */}
                 <Suspense fallback={
                   <div className="flex justify-center items-center py-12">
