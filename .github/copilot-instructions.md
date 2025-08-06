@@ -50,3 +50,8 @@ El flujo de trabajo central de la aplicación es el siguiente:
 -   **Gestión de la Lógica de ML:** Toda la interacción con TensorFlow.js está aislada en el hook `useAutoencoder.js`. Cualquier cambio relacionado con la inferencia del modelo debe realizarse allí.
 -   **Activos Estáticos:** El modelo y los datos se cargan desde el directorio `public/`. Vite sirve estos archivos directamente en la raíz. Las rutas en el código (por ejemplo, para `loadGraphModel`) son relativas a la raíz del servidor, como `/tfjs_decoder_model.../model.json`.
 -   **Renderizado en Canvas:** La salida del modelo se dibuja en un `<canvas>`. La lógica para esto se encuentra en `GeneratedCharacter.jsx` y `LatentSpacePlot.jsx`.
+
+## Buenas Prácticas de Git
+
+-   **Mensajes de Commit:** SIEMPRE usar mensajes cortos y concisos (máximo 50 caracteres) al ejecutar `git commit -m`. Los mensajes largos pueden causar problemas en el entorno de chat. Ejemplo: `git commit -m "fix: corregir errores de linting"` en lugar de mensajes multilínea.
+-   **Formato de Commit:** Seguir el formato convencional: `tipo: descripción breve` (ej: `fix:`, `feat:`, `docs:`, `refactor:`)
