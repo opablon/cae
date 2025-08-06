@@ -17,9 +17,7 @@ function App() {
   const [isFooterVisible, setIsFooterVisible] = useState(false);
   
   // Estados para controlar las transiciones
-  const [showSpinner, setShowSpinner] = useState(true);
-  const [showContent, setShowContent] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isAppFullyReady, setIsAppFullyReady] = useState(false);
   const [transitionCompleted, setTransitionCompleted] = useState(false);
   const [isTheorySectionReady, setIsTheorySectionReady] = useState(false);
 
@@ -36,7 +34,7 @@ function App() {
     handleSliderChange,
     handleCoordInputChange,
     handleReset,
-  } = useAutoencoder(showContent);
+  } = useAutoencoder(true); // Siempre true, manejamos la visibilidad con CSS
 
   // Función throttled para manejar el scroll
   const handleScroll = throttle(() => {
@@ -74,28 +72,18 @@ function App() {
     };
   }, [handleScroll]);
 
-  // Efecto para manejar las transiciones suaves entre spinner y contenido
+  // Efecto para determinar cuando la app está completamente lista
   useEffect(() => {
-    if (!isLoading && isAppReady && isFirstCharacterGenerated && isTheorySectionReady && !isTransitioning && !transitionCompleted) {
-      setIsTransitioning(true);
+    if (!isLoading && isAppReady && isFirstCharacterGenerated && isTheorySectionReady && !transitionCompleted) {
+      // Una vez que todo está listo, activar la transición
+      setIsAppFullyReady(true);
       
-      // Fade-out del spinner
+      // Marcar como completado después de que termine la transición
       setTimeout(() => {
-        setShowSpinner(false);
-        
-        // Pausa antes del fade-in del contenido
-        setTimeout(() => {
-          setShowContent(true);
-          
-          // Esperar a que termine la animación de fade-in antes de finalizar
-          setTimeout(() => {
-            setIsTransitioning(false);
-            setTransitionCompleted(true);
-          }, 700); // Tiempo para completar la animación de fade-in (600ms + buffer)
-        }, 200); // Pausa un poco más larga para el canvas
-      }, 400); // Duración del fade-out del spinner
+        setTransitionCompleted(true);
+      }, 1500); // Tiempo para que complete ambas transiciones
     }
-  }, [isLoading, isAppReady, isFirstCharacterGenerated, isTheorySectionReady, isTransitioning, transitionCompleted]);
+  }, [isLoading, isAppReady, isFirstCharacterGenerated, isTheorySectionReady, transitionCompleted]);
 
   // Efecto para marcar la sección teórica como lista después de que la app esté lista
   useEffect(() => {
@@ -115,23 +103,18 @@ function App() {
     });
   };
 
-  // Renderizar componentes según el estado de transición
-  if (showSpinner) {
-    return (
-      <div className={`transition-opacity duration-500 ease-out ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
-        <Spinner />
-      </div>
-    );
-  }
-
-  if (!showContent) {
-    // Pantalla en blanco durante la transición
-    return <div className="min-h-screen bg-gray-50" />;
-  }
-
+  // Renderizar ambos elementos con transiciones CSS
   return (
     <>
-      <div className={`min-h-screen bg-gray-50 font-sans p-4 sm:p-6 lg:p-8 transition-opacity duration-600 ease-in ${showContent ? 'opacity-100' : 'opacity-0'}`}>
+      {/* Spinner con fade-out */}
+      <div className={`fixed inset-0 z-50 transition-opacity duration-700 ease-out ${isAppFullyReady ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+        <Spinner />
+      </div>
+
+      {/* Contenido principal con fade-in */}
+      <div 
+        className={`min-h-screen bg-gray-50 font-sans p-4 sm:p-6 lg:p-8 transition-opacity duration-1000 ease-out ${isAppFullyReady ? 'opacity-100' : 'opacity-0'}`}
+      >
         <div className="max-w-7xl mx-auto">
           <Header />
           
