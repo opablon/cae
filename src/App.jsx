@@ -20,6 +20,7 @@ function App() {
   const [isAppFullyReady, setIsAppFullyReady] = useState(false);
   const [transitionCompleted, setTransitionCompleted] = useState(false);
   const [isTheorySectionReady, setIsTheorySectionReady] = useState(false);
+  const [isTheoryOpen, setIsTheoryOpen] = useState(false);
 
   const {
     isLoading,
@@ -103,6 +104,10 @@ function App() {
     });
   };
 
+  const toggleTheorySection = () => {
+    setIsTheoryOpen(!isTheoryOpen);
+  };
+
   // Renderizar ambos elementos con transiciones CSS
   return (
     <>
@@ -159,14 +164,36 @@ function App() {
             </aside>
           </main>
           
-          {/* Lazy loading de la sección de teoría */}
-          <Suspense fallback={
-            <div className="flex justify-center items-center py-12">
-              <div className="text-gray-500">Cargando contenido teórico...</div>
+          {/* Sección de teoría con botón colapsable */}
+          <div className="mt-8">
+            <div className="text-center mb-4">
+              <button
+                onClick={toggleTheorySection}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 ease-in-out transform hover:scale-105"
+                aria-expanded={isTheoryOpen}
+                aria-label={isTheoryOpen ? "Ocultar explicación teórica" : "Mostrar explicación teórica"}
+              >
+                <span className="text-xl" role="img" aria-hidden="true">
+                  {isTheoryOpen ? "⬆️" : "🧠"}
+                </span>
+                {isTheoryOpen ? "Ocultar explicación" : "¿Cómo funciona esto?"}
+              </button>
             </div>
-          }>
-            <TheorySection onReady={() => setIsTheorySectionReady(true)} />
-          </Suspense>
+            
+            {/* Contenedor colapsable con CSS Grid */}
+            <div className={`theory-collapsible ${isTheoryOpen ? 'open' : ''}`}>
+              <div className="theory-collapsible-content">
+                {/* Lazy loading de la sección de teoría */}
+                <Suspense fallback={
+                  <div className="flex justify-center items-center py-12">
+                    <div className="text-gray-500">Cargando contenido teórico...</div>
+                  </div>
+                }>
+                  <TheorySection onReady={() => setIsTheorySectionReady(true)} />
+                </Suspense>
+              </div>
+            </div>
+          </div>
           
           {/* Footer */}
           <footer ref={footerRef} className="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500">

@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Clases para accordion con animación CSS Grid */
+.theory-collapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s ease-out;
+}
+
+.theory-collapsible.open {
+  grid-template-rows: 1fr;
+}
+
+.theory-collapsible-content {
+  overflow: hidden;
+}
