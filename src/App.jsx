@@ -200,7 +200,7 @@ function App() {
           </div>
           
           {/* Footer */}
-          <footer ref={footerRef} className="mt-12 pt-6 border-t border-gray-200 text-center text-gray-500">
+          <footer ref={footerRef} className="mt-4 pt-6 border-t border-gray-200 text-center text-gray-500">
             <p>
               <a 
                 href="https://github.com/opablon/cae" 
